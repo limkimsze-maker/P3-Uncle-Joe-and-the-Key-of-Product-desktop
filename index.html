@@ -2145,12 +2145,8 @@ body.quizPageOpen #messageBox{
     }
 
 
-    /* Scarab chamber now uses near-scarab prompts like the torch buttons. */
-    #shineBtn{display:none !important; visibility:hidden !important; pointer-events:none !important;}
-
-
-    /* Chamber 5 now uses near-villager prompts like the torch/scarab prompts. */
-    #wandBtn{display:none !important; visibility:hidden !important; pointer-events:none !important;}
+    /* Prompt-based C3/C5: no shooting buttons. */
+    #shineBtn,#wandBtn{display:none !important; visibility:hidden !important; pointer-events:none !important;}
 
 </style>
 </head>
@@ -3241,7 +3237,7 @@ const wrap = document.getElementById("gameWrap");
       if(villagerFreedCount >= 6){
         openFifthDoor();
       }else{
-        showMessage(`Villager ${villagerFreedCount} of 6 is free. Walk near the next villager and press the prompt.`);
+        showMessage(`Villager ${villagerFreedCount} of 6 is free. Help the next spellbound villager.`);
       }
 
       activeVillagerIndex = null;
@@ -3607,6 +3603,695 @@ function showLightBeam(){
       showMessage("In Chamber 5, walk near the next villager and press the prompt to help them.");
     }
 
+function addHieroglyphPanel(x,z,rotY,text){
+      const canvas = document.createElement("canvas");
+      canvas.width = 512; canvas.height = 256;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#3b2816"; ctx.fillRect(0,0,512,256);
+      ctx.strokeStyle = "#d3a250"; ctx.lineWidth = 10; ctx.strokeRect(14,14,484,228);
+      ctx.font = "bold 54px serif"; ctx.textAlign = "center"; ctx.fillStyle = "#ffd86b";
+      text.split("\n").forEach((line,i)=>ctx.fillText(line,256,88+i*70));
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      const mat = new THREE.MeshStandardMaterial({map:tex,roughness:.75,emissive:0x1b0f06,emissiveIntensity:.22});
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2.8,1.4), mat);
+      mesh.position.set(x,1.65,z);
+      mesh.rotation.y = rotY;
+      scene.add(mesh);
+    }
+
+    
+
+function addTablet(){
+      const group = new THREE.Group();
+      group.position.set(0,0,-6.1);
+      group.name = "EgyptianTabletWithFullPngAndTopPrompt";
+
+      // Image used for the tablet face. Upload tablet.png beside this HTML.
+      // The GitHub raw permalink below is the fallback for your latest design.
+      const TABLET_IMAGE_URLS = [
+        "./tablet.png?v=20260602c",
+        "https://raw.githubusercontent.com/limkimsze-maker/P3-Multiply-Egyptian-Maze/66214321c16d4ebe0a58718dbf380ce82eb4a47a/tablet.png"
+      ];
+
+      /*
+        Full-size tablet layout:
+        - tablet PNG is lower and fully visible
+        - tablet height is reduced by half; words and gem are close above it
+        - sign and gem face the user
+      */
+      const tabletW = 2.18;
+      const tabletH = 1.87;
+      const tabletY = 1.24;
+      const signY = 2.48;
+      const gemY = 2.22;
+
+      // Backing and frame so the PNG reads as a physical tablet in the 3D chamber.
+      const backing = new THREE.Mesh(
+        new THREE.BoxGeometry(tabletW + .32, tabletH + .40, .24),
+        new THREE.MeshStandardMaterial({
+          color:0x9a642b,
+          roughness:.94,
+          metalness:.03,
+          emissive:0x140603,
+          emissiveIntensity:.10
+        })
+      );
+      backing.position.set(0,tabletY,0);
+      backing.castShadow = !LOW_POWER;
+      backing.receiveShadow = !LOW_POWER;
+      group.add(backing);
+
+      const frameOuter = new THREE.Mesh(
+        new THREE.BoxGeometry(tabletW + .52, tabletH + .60, .13),
+        new THREE.MeshStandardMaterial({color:0xb98531,roughness:.65,metalness:.12,emissive:0x2b1202,emissiveIntensity:.12})
+      );
+      frameOuter.position.set(0,tabletY,-.045);
+      frameOuter.castShadow = !LOW_POWER;
+      group.add(frameOuter);
+
+      const frameInset = new THREE.Mesh(
+        new THREE.BoxGeometry(tabletW + .18, tabletH + .20, .15),
+        new THREE.MeshStandardMaterial({color:0x3d1a06,roughness:.88,metalness:.04,emissive:0x100401,emissiveIntensity:.16})
+      );
+      frameInset.position.set(0,tabletY,.035);
+      group.add(frameInset);
+
+      const placeholder = new THREE.Mesh(
+        new THREE.PlaneGeometry(tabletW,tabletH),
+        new THREE.MeshBasicMaterial({color:0xc98d3d,side:THREE.DoubleSide})
+      );
+      placeholder.position.set(0,tabletY,.165);
+      placeholder.renderOrder = 18;
+      group.add(placeholder);
+
+      const tabletFace = new THREE.Mesh(
+        new THREE.PlaneGeometry(tabletW,tabletH),
+        new THREE.MeshBasicMaterial({
+          color:0xffffff,
+          transparent:true,
+          side:THREE.DoubleSide,
+          depthWrite:false
+        })
+      );
+      tabletFace.position.set(0,tabletY,.19);
+      tabletFace.renderOrder = 25;
+      group.add(tabletFace);
+
+      const loader = new THREE.TextureLoader();
+      function loadTabletTexture(i=0){
+        if(i >= TABLET_IMAGE_URLS.length){
+          const c = document.createElement("canvas");
+          c.width = 512; c.height = 1024;
+          const cx = c.getContext("2d");
+          cx.fillStyle = "#c98d3d"; cx.fillRect(0,0,512,1024);
+          cx.strokeStyle = "#ffdf7f"; cx.lineWidth = 18; cx.strokeRect(34,34,444,956);
+          cx.fillStyle = "#3b1a07"; cx.textAlign = "center"; cx.font = "bold 42px serif";
+          cx.fillText("tablet.png",256,500);
+          cx.fillText("not found",256,560);
+          const t = new THREE.CanvasTexture(c);
+          tabletFace.material.map = t;
+          tabletFace.material.needsUpdate = true;
+          placeholder.visible = false;
+          return;
+        }
+        loader.load(TABLET_IMAGE_URLS[i], (tex)=>{
+          tex.needsUpdate = true;
+          if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+          else if (THREE.sRGBEncoding) tex.encoding = THREE.sRGBEncoding;
+
+          // Full PNG mapped to full plane. No crop.
+          tex.offset.set(0,0);
+          tex.repeat.set(1,1);
+          tex.center.set(.5,.5);
+
+          tabletFace.material.map = tex;
+          tabletFace.material.transparent = true;
+          tabletFace.material.needsUpdate = true;
+          placeholder.visible = false;
+        }, undefined, ()=>loadTabletTexture(i+1));
+      }
+      loadTabletTexture();
+
+      // Prominent words just above the tablet.
+      const signCanvas = document.createElement("canvas");
+      signCanvas.width = 1600; signCanvas.height = 300;
+      const sctx = signCanvas.getContext("2d");
+      sctx.clearRect(0,0,1600,300);
+      sctx.textAlign = "center";
+      sctx.textBaseline = "middle";
+      sctx.lineJoin = "round";
+      sctx.font = "1000 94px Georgia, 'Times New Roman', serif";
+      sctx.shadowColor = "rgba(255,216,107,1)";
+      sctx.shadowBlur = 30;
+      sctx.lineWidth = 22;
+      sctx.strokeStyle = "#080200";
+      sctx.strokeText("FIND THE PRODUCT!",800,150);
+      const gold = sctx.createLinearGradient(0,62,0,220);
+      gold.addColorStop(0,"#fffbe0");
+      gold.addColorStop(.34,"#ffe58a");
+      gold.addColorStop(.68,"#ffd04f");
+      gold.addColorStop(1,"#b66508");
+      sctx.fillStyle = gold;
+      sctx.fillText("FIND THE PRODUCT!",800,150);
+      sctx.shadowBlur = 0;
+
+      const signTex = new THREE.CanvasTexture(signCanvas);
+      signTex.needsUpdate = true;
+      if (THREE.SRGBColorSpace) signTex.colorSpace = THREE.SRGBColorSpace;
+      else if (THREE.sRGBEncoding) signTex.encoding = THREE.sRGBEncoding;
+
+      const signBack = new THREE.Mesh(
+        new THREE.BoxGeometry(3.42,.48,.12),
+        new THREE.MeshStandardMaterial({color:0x2a1004,roughness:.52,metalness:.16,emissive:0x160602,emissiveIntensity:.16})
+      );
+      signBack.position.set(0,signY,.24);
+      signBack.castShadow = !LOW_POWER;
+      group.add(signBack);
+
+      const floatingSign = new THREE.Mesh(
+        new THREE.PlaneGeometry(3.58,.62),
+        new THREE.MeshBasicMaterial({map:signTex,transparent:true,side:THREE.DoubleSide,depthWrite:false})
+      );
+      floatingSign.position.set(0,signY,.36);
+      floatingSign.renderOrder = 40;
+      group.add(floatingSign);
+      animated.push({type:"floatingTabletSign",mesh:floatingSign,t:0,baseY:signY});
+
+      // Glowing gem just above the tablet and under the words.
+      const gem = new THREE.Mesh(new THREE.OctahedronGeometry(.19,0), matGlow);
+      gem.position.set(0,gemY,.44);
+      gem.rotation.z = Math.PI/4;
+      gem.castShadow = !LOW_POWER;
+      gem.renderOrder = 38;
+      group.add(gem);
+
+      const gemStand = new THREE.Mesh(
+        new THREE.CylinderGeometry(.10,.18,.11,6),
+        new THREE.MeshStandardMaterial({color:0x8a5010,roughness:.55,metalness:.25,emissive:0x281104,emissiveIntensity:.10})
+      );
+      gemStand.position.set(0,gemY-.30,.32);
+      gemStand.rotation.y = Math.PI/6;
+      group.add(gemStand);
+
+      const glowLight = new THREE.PointLight(0xffcf65, LOW_POWER ? 1.7 : 2.4, 7.5, 1.5);
+      glowLight.position.set(0,gemY+.18,.62);
+      group.add(glowLight);
+
+      // Extra warm light on the sign so it is visible in the dark room.
+      const signLight = new THREE.PointLight(0xffd56c, LOW_POWER ? 1.1 : 1.7, 5.6, 1.8);
+      signLight.position.set(0,signY,.65);
+      group.add(signLight);
+
+      scene.add(group);
+      interactables.push({id:"tablet",group,position:new THREE.Vector3(0,tabletY,-6.1),radius:3.0,label:"Inspect tablet / Start quiz"});
+      interactables.push({id:"tabletSign",group,position:new THREE.Vector3(0,signY,-6.1),radius:3.0,label:"Inspect tablet / Start quiz"});
+      interactables.push({id:"tabletGem",group,position:new THREE.Vector3(0,gemY,-6.1),radius:2.8,label:"Inspect tablet / Start quiz"});
+      animated.push({type:"tabletGem",mesh:gem,light:glowLight,t:0,baseY:gemY});
+    }
+
+
+
+    function makeFinalForestTexture(){
+      const c = document.createElement("canvas");
+      c.width = 1024; c.height = 768;
+      const ctx = c.getContext("2d");
+      const sky = ctx.createLinearGradient(0,0,0,768);
+      sky.addColorStop(0,"#8fd3ff");
+      sky.addColorStop(.58,"#d9f6ff");
+      sky.addColorStop(.59,"#c2f0a8");
+      sky.addColorStop(1,"#58a84d");
+      ctx.fillStyle = sky;
+      ctx.fillRect(0,0,1024,768);
+      ctx.fillStyle = "#fff8b0";
+      ctx.beginPath(); ctx.arc(860,110,72,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,.8)";
+      ctx.beginPath(); ctx.arc(200,120,42,0,Math.PI*2); ctx.arc(245,120,50,0,Math.PI*2); ctx.arc(290,120,40,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(610,150,34,0,Math.PI*2); ctx.arc(648,146,44,0,Math.PI*2); ctx.arc(688,152,32,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = "#4a2c17";
+      ctx.fillRect(120,350,22,160); ctx.fillRect(230,320,28,190); ctx.fillRect(360,360,24,150);
+      ctx.fillRect(530,335,30,180); ctx.fillRect(660,340,26,170); ctx.fillRect(810,330,30,180);
+      ctx.fillStyle = "#2f7d32";
+      [[130,330,80],[245,290,96],[372,335,76],[545,305,95],[674,310,92],[825,300,108]].forEach(function(v){
+        ctx.beginPath();
+        ctx.arc(v[0], v[1], v[2], 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.fillStyle = "#3c8c3c";
+      [[175,365,60],[300,345,70],[594,355,60],[738,348,68],[890,350,70]].forEach(function(v){
+        ctx.beginPath();
+        ctx.arc(v[0], v[1], v[2], 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.fillStyle = "#b7f57a";
+      ctx.fillRect(0,510,1024,258);
+      ctx.fillStyle = "#f4f0ae";
+      ctx.beginPath();
+      ctx.moveTo(500,510); ctx.lineTo(450,768); ctx.lineTo(574,768); ctx.lineTo(540,510); ctx.closePath();
+      ctx.fill();
+      const tex = new THREE.CanvasTexture(c);
+      if(THREE.sRGBEncoding) tex.encoding = THREE.sRGBEncoding;
+      return tex;
+    }
+
+    function addFinalExitScene(){
+      const door = addWall(0,-87.68,5.35,.72,3.95,matDoor,true);
+      door.mesh.position.y = 0;
+      door.active = false;
+
+      const glow = new THREE.Mesh(
+        new THREE.PlaneGeometry(4.9,3.5),
+        new THREE.MeshBasicMaterial({color:0xfff3b0,transparent:true,opacity:0})
+      );
+      glow.position.set(0,1.8,-87.84);
+      glow.visible = false;
+      scene.add(glow);
+
+      const forest = new THREE.Mesh(
+        new THREE.PlaneGeometry(4.6,3.2),
+        new THREE.MeshBasicMaterial({map:makeFinalForestTexture(), transparent:false})
+      );
+      forest.position.set(0,1.72,-87.92);
+      forest.visible = false;
+      forest.renderOrder = 5;
+      scene.add(forest);
+
+      const sideL = new THREE.Mesh(new THREE.BoxGeometry(.52,4.15,.72), matStone);
+      sideL.position.set(-2.92,2.0,-87.68);
+      const sideR = sideL.clone(); sideR.position.x = 2.92;
+      const lintel = new THREE.Mesh(new THREE.BoxGeometry(6.2,.48,.72), matStone);
+      lintel.position.set(0,3.95,-87.68);
+      scene.add(sideL, sideR, lintel);
+
+      const sunLight = new THREE.PointLight(0xfff1a8,0,18,1.3);
+      sunLight.position.set(0,2.2,-88.2);
+      scene.add(sunLight);
+
+      window.finalExitScene = {door, glow, forest, sunLight};
+    }
+
+    function addRuby(){
+      const group = new THREE.Group();
+      group.position.set(0,1.05,-10.2);
+      group.visible = false;
+      const ruby = new THREE.Mesh(new THREE.OctahedronGeometry(.62,0), matRuby);
+      ruby.castShadow = !LOW_POWER;
+      group.add(ruby);
+      const halo = new THREE.Mesh(new THREE.TorusGeometry(.78,.025,10,40), new THREE.MeshStandardMaterial({color:0xffe28a,emissive:0xffb833,emissiveIntensity:.9,roughness:.25}));
+      halo.rotation.x = Math.PI/2;
+      group.add(halo);
+      const light = new THREE.PointLight(0xff2d66, LOW_POWER ? 1.8 : 2.4, 8, 1.5);
+      light.position.set(0,.35,0);
+      group.add(light);
+      scene.add(group);
+      const obj = {id:"ruby",group,position:new THREE.Vector3(0,1.05,-10.2),radius:2.6,label:"Collect Ruby of Product"};
+      interactables.push(obj);
+      animated.push({type:"ruby",group,ruby,halo,light,t:0});
+      return obj;
+    }
+
+    function buildWorld(){
+      addAmbient();
+      addFloor(0,0,15,15);
+      addFloor(0,-13.5,6,13);
+      addFloor(0,-28.5,15,15);
+
+      addWall(0,7.5,15,.55);
+      addWall(-7.5,0,.55,15);
+      addWall(7.5,0,.55,15);
+      addWall(-5.25,-7.5,4.5,.55);
+      addWall(5.25,-7.5,4.5,.55);
+      addWall(-3.25,-13.5,.55,13);
+      addWall(3.25,-13.5,.55,13);
+      window.firstDoor = addWall(0,-7.72,5.6,.72,3.8,matDoor,true);
+
+      // Clearly mark the door that separates the Starting Chamber and Torch Corridor.
+      const firstDoorLabelCanvas = document.createElement("canvas");
+      firstDoorLabelCanvas.width = 768; firstDoorLabelCanvas.height = 260;
+      const fctx = firstDoorLabelCanvas.getContext("2d");
+      fctx.fillStyle = "#2a1305"; fctx.fillRect(0,0,768,260);
+      fctx.strokeStyle = "#ffd86b"; fctx.lineWidth = 14; fctx.strokeRect(18,18,732,224);
+      fctx.textAlign = "center"; fctx.textBaseline = "middle";
+      fctx.fillStyle = "#ffe9a0"; fctx.font = "bold 56px Georgia,serif";
+      fctx.fillText("TORCH",384,90);
+      fctx.fillText("CORRIDOR",384,160);
+      fctx.font = "bold 28px Georgia,serif";
+      fctx.fillText("Solve 6 products to open",384,218);
+      const firstDoorTex = new THREE.CanvasTexture(firstDoorLabelCanvas);
+      window.firstDoorLabel = new THREE.Mesh(
+        new THREE.PlaneGeometry(3.3,1.12),
+        new THREE.MeshBasicMaterial({map:firstDoorTex,transparent:true,side:THREE.DoubleSide})
+      );
+      window.firstDoorLabel.position.set(0,1.85,-7.34);
+      window.firstDoorLabel.renderOrder = 25;
+      scene.add(window.firstDoorLabel);
+
+
+      addWall(-7.5,-28.5,.55,15);
+      addWall(7.5,-28.5,.55,15);
+      addWall(0,-36,15,.55);
+      window.thirdDoorOpen = false;
+      window.thirdDoor = addWall(0,-35.72,4.8,.62,3.6,matDoor,true);
+      addWall(-5.25,-21,4.5,.55);
+      addWall(5.25,-21,4.5,.55);
+
+      window.secondDoorOpen = false;
+      window.secretDoor = addWall(0,-21,4.6,.72,3.8,matDoor,true);
+
+      // Chamber 4: Bridge Crossing Chamber
+      addFloor(0,-49.0,15,22);
+      addFloor(0,-64.5,15,8);
+      addWall(-7.5,-49,.55,22);
+      addWall(7.5,-49,.55,22);
+      addWall(0,-60,15,.55);
+      window.fourthDoorOpen = false;
+        window.fifthDoorOpen = false;
+      window.fourthDoor = addWall(0,-59.72,5.2,.72,3.8,matDoor,true);
+      addWall(-7.5,-64.5,.55,8);
+      addWall(7.5,-64.5,.55,8);
+      window.fifthDoorOpen = false;
+      window.fifthDoor = addWall(0,-68.22,5.2,.72,3.8,matDoor,true);
+
+      // Chamber 5: Spellbound Villagers Hall
+      addFloor(0,-78.5,15,19);
+      addWall(-7.5,-78.5,.55,19);
+      addWall(7.5,-78.5,.55,19);
+      addWall(0,-88,15,.55);
+
+      addPillar(-5.5,4.8); addPillar(5.5,4.8); addPillar(-5.5,-4.8); addPillar(5.5,-4.8);
+      addPillar(-5.2,-32.2); addPillar(5.2,-32.2);
+
+      addTorch(-6.95,1.8,"left"); addTorch(6.95,1.8,"right");
+      addTorch(-2.9,-12,"left"); addTorch(2.9,-16.2,"right");
+      addTorch(-6.9,-28.8,"left"); addTorch(6.9,-28.8,"right");
+
+      // Torch Corridor: six buttons. Each solved question lights one torch.
+      addTorchButton(0,-2.25,-9.8,"left");
+      addTorchButton(1,2.25,-11.6,"right");
+      addTorchButton(2,-2.25,-13.4,"left");
+      addTorchButton(3,2.25,-15.2,"right");
+      addTorchButton(4,-2.25,-17.0,"left");
+      addTorchButton(5,2.25,-18.8,"right");
+
+      // Scarab Puzzle Chamber: shine your explorer light on 6 green scarab symbols, then solve 6 questions.
+      addScarab(0,-4.2,-25.2);
+      addScarab(1,0,-25.8);
+      addScarab(2,4.2,-25.2);
+      addScarab(3,-4.5,-30.0);
+      addScarab(4,0,-31.0);
+      addScarab(5,4.5,-30.0);
+
+      // Bridge Crossing Chamber: C2-style prompt buttons in one straight row.
+      addBridgeVisuals();
+      addSandRuneButton(0,0,-39.8);
+      addSandRuneButton(1,0,-42.8);
+      addSandRuneButton(2,0,-45.8);
+      addSandRuneButton(3,0,-48.8);
+      addSandRuneButton(4,0,-51.8);
+      addSandRuneButton(5,0,-54.8);
+
+      // Chamber 5: six spellbound villagers using uploaded built-in emoji villagers.
+      addTorch(-6.9,-73.0,"left"); addTorch(6.9,-73.0,"right");
+      addTorch(-6.9,-83.0,"left"); addTorch(6.9,-83.0,"right");
+      addSpellboundVillager(0,-4.2,-73.0);
+      addSpellboundVillager(1,0,-74.2);
+      addSpellboundVillager(2,4.2,-73.0);
+      addSpellboundVillager(3,-4.2,-81.0);
+      addSpellboundVillager(4,0,-82.2);
+      addSpellboundVillager(5,4.2,-81.0);
+
+      addHieroglyphPanel(-7.18,-1.8,Math.PI/2,"𓃭 𓂀 𓆣\nSOLVE");
+      addHieroglyphPanel(7.18,-2.2,-Math.PI/2,"𓋹 𓊽 𓎛\nESCAPE");
+      addHieroglyphPanel(0,-35.68,0,"EMERALD\nAWAITS");
+      addHieroglyphPanel(0,-59.35,0,"MAGIC WAND\nAHEAD");
+      addHieroglyphPanel(0,-67.85,0,"SPELLBOUND\nVILLAGERS");
+
+      addTablet();
+      window.rubyObj = addRuby();
+      window.topazObj = addTopaz();
+      window.emeraldObj = addEmerald();
+      window.sapphireObj = addSapphire();
+      window.restorationKeyObj = addRestorationKey();
+      addFinalExitScene();
+
+      addWall(0,0,15,15,.22,matBlack,false).mesh.position.y = 3.52;
+      addWall(0,-13.5,6,13,.22,matBlack,false).mesh.position.y = 3.52;
+      addWall(0,-28.5,15,15,.22,matBlack,false).mesh.position.y = 3.52;
+      addWall(0,-49,15,22,.22,matBlack,false).mesh.position.y = 3.52;
+      addWall(0,-64.5,15,8,.22,matBlack,false).mesh.position.y = 3.52;
+      addWall(0,-78.5,15,19,.22,matBlack,false).mesh.position.y = 3.52;
+    }
+    buildWorld();
+    applySavedProgress();
+
+    // Initial state must be 3D chamber mode, not quiz mode.
+    modalShade.style.display = "none";
+    modalShade.classList.remove("showScroll");
+    modalShade.classList.remove("pageScrollMode");
+    document.documentElement.classList.remove("quizPageOpen");
+    document.body.classList.remove("quizPageOpen");
+    updateAlgorithmButtonVisibility();
+
+
+
+    // Jump checkpoint functions removed for pupil version.
+
+    const moveKeys = {forward:false,back:false,left:false,right:false,lookLeft:false,lookRight:false,lookUp:false,lookDown:false};
+    function setMoveKey(action,value){ if(action in moveKeys) moveKeys[action]=value; }
+
+    window.addEventListener("keydown",(e)=>{
+      const k = e.key.toLowerCase();
+      if(modalShade.style.display === "flex"){
+        if(/^[0-9]$/.test(e.key)){ insertDigit(e.key); e.preventDefault(); return; }
+        if(e.key === "Backspace"){ backspaceEntry(); e.preventDefault(); return; }
+        if(e.key === "Enter"){ checkDigit(); e.preventDefault(); return; }
+      }
+      if(k==="w") moveKeys.forward=true;
+      if(k==="s") moveKeys.back=true;
+      if(k==="a") moveKeys.left=true;
+      if(k==="d") moveKeys.right=true;
+      if(e.key==="ArrowLeft") moveKeys.lookLeft=true;
+      if(e.key==="ArrowRight") moveKeys.lookRight=true;
+      if(e.key==="ArrowUp") moveKeys.lookUp=true;
+      if(e.key==="ArrowDown") moveKeys.lookDown=true;
+      if(k==="e") tryInteract();
+      if(e.code==="Space"){
+        // C3 and C5 now use near-object prompts, not shooting.
+        e.preventDefault();
+      }
+      if(k==="escape") closePuzzle();
+    });
+    window.addEventListener("keyup",(e)=>{
+      const k = e.key.toLowerCase();
+      if(k==="w") moveKeys.forward=false;
+      if(k==="s") moveKeys.back=false;
+      if(k==="a") moveKeys.left=false;
+      if(k==="d") moveKeys.right=false;
+      if(e.key==="ArrowLeft") moveKeys.lookLeft=false;
+      if(e.key==="ArrowRight") moveKeys.lookRight=false;
+      if(e.key==="ArrowUp") moveKeys.lookUp=false;
+      if(e.key==="ArrowDown") moveKeys.lookDown=false;
+    });
+
+    document.getElementById("shineBtn").addEventListener("click",(e)=>{e.preventDefault(); shineScarab();});
+    document.getElementById("wandBtn").addEventListener("click",(e)=>{e.preventDefault(); castWandAtVillager();});
+    document.querySelectorAll("[data-hold]").forEach(btn=>{
+      const action = btn.dataset.hold;
+      const down = ev => {ev.preventDefault();btn.classList.add("active");setMoveKey(action,true);};
+      const up = ev => {ev.preventDefault();btn.classList.remove("active");setMoveKey(action,false);};
+      btn.addEventListener("pointerdown",down);
+      btn.addEventListener("pointerup",up);
+      btn.addEventListener("pointercancel",up);
+      btn.addEventListener("pointerleave",up);
+      btn.addEventListener("contextmenu",ev=>ev.preventDefault());
+      btn.setAttribute("draggable","false");
+    });
+
+    let dragging = false, lastX=0, lastY=0;
+    renderer.domElement.addEventListener("pointerdown",(e)=>{
+      if(modalShade.style.display==="flex") return;
+      dragging = true; lastX=e.clientX; lastY=e.clientY;
+      renderer.domElement.setPointerCapture?.(e.pointerId);
+    });
+    renderer.domElement.addEventListener("pointermove",(e)=>{
+      if(!dragging) return;
+      const dx=e.clientX-lastX, dy=e.clientY-lastY;
+      lastX=e.clientX; lastY=e.clientY;
+      camera.rotation.y -= dx*.0032;
+      camera.rotation.x -= dy*.0028;
+      camera.rotation.x = Math.max(-1.1,Math.min(1.1,camera.rotation.x));
+    });
+    renderer.domElement.addEventListener("pointerup",()=>dragging=false);
+    renderer.domElement.addEventListener("pointercancel",()=>dragging=false);
+    window.addEventListener("contextmenu",e=>e.preventDefault());
+
+    function collides(x,z){
+      const r=.42;
+      for(const o of obstacles){
+        if(!o.active) continue;
+        if(x>o.minX-r && x<o.maxX+r && z>o.minZ-r && z<o.maxZ+r) return true;
+      }
+      return false;
+    }
+
+    function movePlayer(dt){
+      if(modalShade.style.display==="flex" || document.getElementById("endingPanel").style.display==="flex") return;
+      const lookSpeed = 1.8*dt;
+      if(moveKeys.lookLeft) camera.rotation.y += lookSpeed;
+      if(moveKeys.lookRight) camera.rotation.y -= lookSpeed;
+      if(moveKeys.lookUp) camera.rotation.x += lookSpeed;
+      if(moveKeys.lookDown) camera.rotation.x -= lookSpeed;
+      camera.rotation.x = Math.max(-1.1,Math.min(1.1,camera.rotation.x));
+
+      let ix=0, iz=0;
+      if(moveKeys.forward) iz += 1;
+      if(moveKeys.back) iz -= 1;
+      if(moveKeys.left) ix -= 1;
+      if(moveKeys.right) ix += 1;
+      const len = Math.hypot(ix,iz);
+      if(!len) return;
+      ix/=len; iz/=len;
+
+      const yaw = camera.rotation.y;
+      const forward = new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
+      const right = new THREE.Vector3(Math.cos(yaw),0,-Math.sin(yaw));
+      const dir = new THREE.Vector3().addScaledVector(forward,iz).addScaledVector(right,ix).normalize();
+      const speed = 4.1;
+      const nx = camera.position.x + dir.x*speed*dt;
+      const nz = camera.position.z + dir.z*speed*dt;
+      if(!collides(nx,camera.position.z)) camera.position.x = nx;
+      if(!collides(camera.position.x,nz)) camera.position.z = nz;
+    }
+
+    function updateInteraction(){
+      currentTarget = null;
+      let nearest = Infinity;
+      for(const item of interactables){
+        if(item.id==="ruby" && (!rubyVisible || rubyCollected)) continue;
+        if(item.id==="topaz" && (!topazVisible || topazCollected)) continue;
+        if(item.id==="emerald" && (!emeraldVisible || emeraldCollected)) continue;
+        if(item.id==="sapphire" && (!sapphireVisible || sapphireCollected)) continue;
+        if(item.id==="restorationKey" && (!restorationKeyVisible || restorationKeyCollected)) continue;
+        if(String(item.id || "").startsWith("torchBtn")){
+          const idx = Number(String(item.id).replace("torchBtn",""));
+          if(!doorOpen || torchChallengeDone.has(idx) || idx !== torchChallengeDone.size) continue;
+        }
+        if(String(item.id || "").startsWith("scarabBtn")){
+          const idx = Number(String(item.id).replace("scarabBtn",""));
+          if(!window.secondDoorOpen || !topazCollected || scarabChallengeDone.has(idx) || idx !== scarabChallengeDone.size) continue;
+        }
+        if(String(item.id || "").startsWith("sandBtn")){
+          const idx = Number(String(item.id).replace("sandBtn",""));
+          if(!window.thirdDoorOpen || sandChallengeDone.has(idx) || idx !== sandChallengeDone.size) continue;
+        }
+        if(String(item.id || "").startsWith("villagerBtn")){
+          const idx = Number(String(item.id).replace("villagerBtn",""));
+          if(!window.fifthDoorOpen || !sapphireCollected || villagerChallengeDone.has(idx) || idx !== villagerChallengeDone.size) continue;
+        }
+        if(item.id==="tablet" && doorOpen) continue;
+        const dist = Math.hypot(camera.position.x-item.position.x,camera.position.z-item.position.z);
+        if(dist < item.radius && dist < nearest){
+          nearest = dist; currentTarget = item;
+        }
+      }
+      if(currentTarget){
+        promptText.textContent = currentTarget.label;
+        promptEl.style.display = "inline-flex";
+      }else{
+        promptEl.style.display = "none";
+      }
+      if(camera.position.z < -68.0) chamberText.textContent = `Spellbound Villagers (${villagerFreedCount}/6)`;
+      else if(camera.position.z < -36.0) chamberText.textContent = `Bridge Crossing (${sandStableCount}/6)`;
+      else if(camera.position.z < -21.5) chamberText.textContent = `Scarab Puzzle (${scarabLightedCount}/6)`;
+      else if(camera.position.z < -7.5) chamberText.textContent = `Torch Corridor (${torchLitCount}/${TORCH_TOTAL})`;
+      else chamberText.textContent = "Starting Chamber";
+    }
+
+    promptEl.addEventListener("click", tryInteract);
+    function tryInteract(){
+      if(!currentTarget) return;
+      unlockAudio();
+      if(currentTarget.id === "tablet"){
+        activeQuizMode = "starting";
+        openPuzzle();
+      }
+      if(currentTarget.id === "ruby") collectRuby();
+      if(currentTarget.id === "topaz") collectTopaz();
+      if(currentTarget.id === "emerald") collectEmerald();
+      if(currentTarget.id === "sapphire") collectSapphire();
+      if(currentTarget.id === "restorationKey") collectRestorationKey();
+      if(String(currentTarget.id || "").startsWith("torchBtn")){
+        const idx = Number(String(currentTarget.id).replace("torchBtn",""));
+        if(torchChallengeDone.has(idx)){
+          showMessage("This torch is already lit. Proceed to the next torch button.");
+          return;
+        }
+        if(idx !== torchChallengeDone.size){
+          showMessage(`Go to Torch ${torchChallengeDone.size + 1} first.`);
+          return;
+        }
+        activeQuizMode = "torch";
+        activeTorchIndex = idx;
+        quiz.stageIndex = 0;
+        quiz.questionInStage = 1;
+        quiz.solvedTotal = 0;
+        loadQuestion(randomQuestionForTorch());
+        openPuzzle();
+        setFeedback("hint", "Torch Corridor: solve this 2-digit × 1-digit question to light one torch.");
+      }
+      if(String(currentTarget.id || "").startsWith("scarabBtn")){
+        const idx = Number(String(currentTarget.id).replace("scarabBtn",""));
+        if(scarabChallengeDone.has(idx)){
+          showMessage("This scarab is already lit. Proceed to the next scarab.");
+          return;
+        }
+        if(idx !== scarabChallengeDone.size){
+          showMessage(`Go to Scarab ${scarabChallengeDone.size + 1} first.`);
+          return;
+        }
+        activeQuizMode = "scarab";
+        activeScarabIndex = idx;
+        quiz.stageIndex = 0;
+        quiz.questionInStage = 1;
+        quiz.solvedTotal = 0;
+        loadQuestion(randomQuestionForScarab());
+        openPuzzle();
+        setFeedback("hint", "Scarab Puzzle Chamber: solve this 3-digit × 1-digit question to light one scarab.");
+      }
+      if(String(currentTarget.id || "").startsWith("sandBtn")){
+        const idx = Number(String(currentTarget.id).replace("sandBtn",""));
+        if(sandChallengeDone.has(idx)){
+          showMessage("This bridge step is already complete. Walk to the next step.");
+          return;
+        }
+        if(idx !== sandChallengeDone.size){
+          showMessage(`Go to Step ${sandChallengeDone.size + 1} first.`);
+          return;
+        }
+        activeQuizMode = "sand";
+        activeSandIndex = idx;
+        quiz.stageIndex = 0;
+        quiz.questionInStage = 1;
+        quiz.solvedTotal = 0;
+        loadQuestion(randomQuestionForSand());
+        openPuzzle();
+        setFeedback("hint", `Bridge Crossing: solve this 2-digit × 1-digit regrouping question to take Step ${idx+1}.`);
+      }
+      if(String(currentTarget.id || "").startsWith("villagerBtn")){
+        const idx = Number(String(currentTarget.id).replace("villagerBtn",""));
+        if(villagerChallengeDone.has(idx)){
+          showMessage("This villager is already free. Proceed to the next villager.");
+          return;
+        }
+        if(idx !== villagerChallengeDone.size){
+          showMessage(`Go to Villager ${villagerChallengeDone.size + 1} first.`);
+          return;
+        }
+        openVillagerQuestion(idx);
+      }
+    }
+
+    
     function updateAlgorithmButtonVisibility(){
       const modalOpen = !!(
         modalShade &&
@@ -3682,7 +4367,6 @@ function openPuzzle(){
       window.thirdDoorOpen = true;
       if(window.thirdDoor){
         window.thirdDoor.active = false;
-        // Raise immediately so pupils can clearly proceed to the bridge.
         if(window.thirdDoor.mesh) window.thirdDoor.mesh.position.y = 5.2;
       }
       emeraldVisible = true;
