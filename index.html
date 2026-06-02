@@ -814,7 +814,267 @@
       .aCell,.aSym{font-size:24px}
       .digitInput,.digitBox{width:48px;height:38px;font-size:24px}
     }
-  </style>
+  
+/* ===== Algorithm display guide from Animal Rescue: laptop + mobile responsive ===== */
+#algoModal{
+  scrollbar-gutter:stable both-edges;
+}
+#algoHost{
+  max-width:100%;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.algoBox{
+  width:max-content;
+  min-width:100%;
+}
+#workGrid,
+.workGrid{
+  align-items:stretch;
+}
+.darkCard{
+  min-width:0;
+}
+#pvCard{
+  min-width:0;
+}
+#keypad{
+  margin-top:8px;
+  padding:7px 8px;
+}
+#keypad .keyHelp{
+  margin:0 0 5px;
+  font-size:11px;
+  font-weight:1000;
+  color:#e8c98b;
+  line-height:1.1;
+}
+#keypad.oneRow .numKeys{
+  grid-template-columns:repeat(12, minmax(28px, 1fr)) !important;
+}
+#keypad.twoRows .numKeys{
+  grid-template-columns:repeat(6, minmax(38px, 1fr)) !important;
+}
+#keypad .numKeys{
+  gap:5px !important;
+}
+#keypad .keyBtn{
+  min-height:34px;
+  height:34px;
+  padding:2px 0;
+  border-radius:10px;
+  font-size:17px;
+  line-height:1;
+}
+#keypad .keyBtn.utility,
+#keypad .keyBtn.danger{
+  font-size:14px;
+  color:#fff7d7;
+}
+#keypad .keyBtn.danger{
+  background:linear-gradient(180deg,rgba(115,30,30,.98),rgba(50,10,10,.98));
+  border:2px solid rgba(255,150,150,.34);
+}
+.actionRow{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto;
+  align-items:center;
+}
+.actionRow .bigBtn{
+  margin:0;
+}
+#btnCheck{
+  min-width:180px;
+}
+#btnHint{
+  min-width:78px;
+}
+#btnNextQuestion{
+  min-width:160px;
+}
+@media (min-width:981px){
+  .workGrid{
+    grid-template-columns:minmax(0,1.18fr) minmax(360px,.82fr);
+  }
+  #algoModal{
+    max-height:min(92dvh,900px);
+  }
+  #algoHost{
+    overflow-x:hidden;
+  }
+}
+@media (max-width:980px){
+  .workGrid{
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+  .workGrid.matHidden{
+    grid-template-columns:1fr;
+  }
+  #algoModal{
+    width:min(100vw,760px);
+  }
+}
+@media (max-width:760px){
+  #modalShade{
+    align-items:stretch;
+    justify-content:center;
+    padding:0;
+  }
+  #algoModal{
+    width:100vw;
+    max-height:calc(var(--vh, 1vh) * 100);
+    height:100dvh;
+    border-radius:0;
+    border-left:0;
+    border-right:0;
+    border-top:0;
+    border-bottom:0;
+    padding:8px;
+  }
+  .modalHead{
+    margin-bottom:6px;
+  }
+  .modalHead h2{
+    font-size:22px;
+  }
+  .modalHead p{
+    font-size:12px;
+  }
+  .equationPill{
+    padding:8px 10px;
+    font-size:24px;
+    border-radius:15px;
+  }
+  .quizBar{
+    margin-bottom:8px;
+    padding:7px;
+    gap:6px;
+    border-radius:15px;
+  }
+  .stageBadge{
+    font-size:11px;
+    padding:6px 8px;
+  }
+  .darkCard{
+    padding:8px;
+    border-radius:16px;
+  }
+  .darkCard h3{
+    font-size:25px;
+    margin-bottom:3px;
+  }
+  .subText{
+    font-size:11px;
+    margin-bottom:6px;
+    line-height:1.14;
+  }
+  #matHost,.matCols,.matCol{
+    min-height:280px;
+  }
+  .rows,.pileArea{
+    height:198px;
+  }
+  .algoLabels,.algoGrid{
+    grid-template-columns:36px repeat(var(--algoCols,3), minmax(54px, 1fr)) !important;
+  }
+  .algoLabels div{
+    font-size:11px;
+  }
+  .aCell,.aSym{
+    min-height:42px;
+    font-size:24px;
+  }
+  .carryCell{
+    min-height:30px;
+    font-size:17px;
+  }
+  .digitInput,.digitBox{
+    width:44px;
+    height:34px;
+    font-size:23px;
+    border-radius:10px;
+  }
+  .carryInput{
+    width:38px;
+    height:28px;
+    font-size:18px;
+  }
+  .lineRow{
+    height:3px;
+  }
+  #keypad{
+    margin-top:6px;
+    padding:6px;
+    border-radius:14px;
+  }
+  #keypad .keyHelp{
+    display:none;
+  }
+  #keypad.twoRows .numKeys{
+    grid-template-columns:repeat(6, minmax(0,1fr)) !important;
+  }
+  #keypad.oneRow .numKeys{
+    grid-template-columns:repeat(12, minmax(0,1fr)) !important;
+  }
+  #keypad .numKeys{
+    gap:4px !important;
+  }
+  #keypad .keyBtn{
+    height:30px;
+    min-height:30px;
+    font-size:15px;
+    border-radius:8px;
+  }
+  #keypad .keyBtn.utility,
+  #keypad .keyBtn.danger{
+    font-size:11px;
+  }
+  .actionRow{
+    grid-template-columns:minmax(0,1fr) 58px;
+    gap:5px;
+    margin-top:7px;
+  }
+  #btnCheck{
+    min-width:0;
+    min-height:36px;
+    padding:7px 8px;
+    font-size:15px;
+  }
+  #btnHint{
+    min-width:0;
+    width:58px;
+    min-height:36px;
+    padding:7px 4px;
+    font-size:13px;
+  }
+  #btnNextQuestion{
+    grid-column:1 / -1;
+    width:100%;
+    min-width:0;
+    min-height:36px;
+    padding:7px 8px;
+    font-size:15px;
+  }
+  .feedback,.hintPanel{
+    margin-top:7px;
+    padding:8px;
+    border-radius:12px;
+    font-size:12px;
+    line-height:1.18;
+  }
+}
+@media (max-width:430px){
+  #keypad.oneRow .numKeys{
+    grid-template-columns:repeat(6, minmax(0,1fr)) !important;
+  }
+  #keypad.oneRow::before{
+    content:"";
+    display:none !important;
+  }
+}
+
+</style>
 </head>
 
 <body>
@@ -896,6 +1156,7 @@
           <div class="hintPanel" id="hintPanel"></div>
 
           <div id="keypad" class="twoRows">
+            <div class="keyHelp">Tap box → number. Use the in-game keyboard so iOS and Android screens stay stable.</div>
             <div class="numKeys" id="numKeys">
               <button class="keyBtn main" data-num="1">1</button>
               <button class="keyBtn main" data-num="2">2</button>
@@ -907,12 +1168,9 @@
               <button class="keyBtn main" data-num="8">8</button>
               <button class="keyBtn main" data-num="9">9</button>
               <button class="keyBtn main" data-num="0">0</button>
+              <button class="keyBtn utility" id="btnBackspace">⌫</button>
+              <button class="keyBtn danger" id="btnClearEntry">Del</button>
             </div>
-            <div class="keyActions">
-              <button class="keyBtn" id="btnBackspace">⌫ Backspace</button>
-              <button class="keyBtn" id="btnClearEntry">Clear</button>
-            </div>
-            <div class="keyHelp">The boxes use the on-screen keyboard so the game works better on iOS and Android.</div>
           </div>
 
           <div class="actionRow">
@@ -940,6 +1198,23 @@
 
   <div class="confettiLayer" id="confettiLayer"></div>
   <div id="credit">Designed by Lim Kim Sze © 2026</div>
+
+
+<script>
+(function(){
+  function setVH(){
+    var h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
+    document.documentElement.style.setProperty("--vh", (h * 0.01) + "px");
+  }
+  setVH();
+  window.addEventListener("resize", setVH, {passive:true});
+  window.addEventListener("orientationchange", setVH, {passive:true});
+  if(window.visualViewport){
+    window.visualViewport.addEventListener("resize", setVH, {passive:true});
+    window.visualViewport.addEventListener("scroll", setVH, {passive:true});
+  }
+})();
+</script>
 
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
@@ -1315,6 +1590,7 @@
       clearFeedback();
       hideHint();
       renderAll();
+      if(!matVisible){ setFeedback("hint", "Mobile view: the algorithm is shown first. Press <b>Show Place Value Mat</b> if you need the discs."); }
       setTimeout(()=>setActiveEntry(document.getElementById("currentDigitInput")),60);
     }
     function closePuzzle(){ modalShade.style.display = "none"; }
@@ -1448,7 +1724,7 @@
     let steps = [];
     let state = null;
     let busy = false;
-    let matVisible = true;
+    let matVisible = !(window.matchMedia && window.matchMedia("(max-width: 760px)").matches);
     let keyboardRows = 2;
     let activeEntry = null;
 
