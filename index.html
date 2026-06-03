@@ -2434,11 +2434,218 @@ body.quizPageOpen #messageBox{
       .cleanHelpPanel{font-size:12px !important;padding:9px !important;}
     }
 
+
+    /* ===== VISIBLE PASSWORD DEBUG PANEL ===== */
+    #debugOpenBtn{
+      position:fixed !important;
+      left:10px !important;
+      top:calc(84px + var(--safeTop,0px)) !important;
+      z-index:2147483000 !important;
+      display:block !important;
+      visibility:visible !important;
+      opacity:1 !important;
+      pointer-events:auto !important;
+      border:2px solid rgba(255,216,107,.72) !important;
+      border-radius:14px !important;
+      padding:9px 12px !important;
+      font-family:inherit !important;
+      font-weight:1000 !important;
+      font-size:13px !important;
+      color:#fff7d7 !important;
+      background:linear-gradient(180deg,rgba(70,46,20,.98),rgba(25,14,6,.98)) !important;
+      box-shadow:0 5px 16px rgba(0,0,0,.45) !important;
+      cursor:pointer !important;
+      touch-action:manipulation !important;
+      user-select:none !important;
+      -webkit-user-select:none !important;
+    }
+    #debugOpenBtn:active{transform:translateY(2px) !important;}
+
+    #debugPasswordOverlay{
+      position:fixed !important;
+      inset:0 !important;
+      z-index:2147483001 !important;
+      display:none;
+      align-items:center !important;
+      justify-content:center !important;
+      padding:18px !important;
+      background:rgba(0,0,0,.68) !important;
+      backdrop-filter:blur(5px) !important;
+      pointer-events:auto !important;
+      touch-action:auto !important;
+    }
+    #debugPasswordCard{
+      width:min(360px,calc(100vw - 28px)) !important;
+      border-radius:20px !important;
+      border:3px solid rgba(255,216,107,.78) !important;
+      background:linear-gradient(180deg,rgba(32,18,7,.98),rgba(8,5,2,.98)) !important;
+      color:#fff4c2 !important;
+      box-shadow:0 14px 42px rgba(0,0,0,.72) !important;
+      padding:16px !important;
+      font-family:inherit !important;
+      text-align:center !important;
+      pointer-events:auto !important;
+      touch-action:auto !important;
+    }
+    #debugPasswordCard h3{
+      margin:0 0 8px !important;
+      color:#ffe28b !important;
+      font-size:20px !important;
+    }
+    #debugPasswordCard p{
+      margin:0 0 12px !important;
+      color:#e8c98b !important;
+      font-weight:900 !important;
+      line-height:1.35 !important;
+      font-size:13px !important;
+    }
+    #debugPasswordInput{
+      width:100% !important;
+      min-height:46px !important;
+      border-radius:14px !important;
+      border:2px solid rgba(255,216,107,.55) !important;
+      background:rgba(0,0,0,.35) !important;
+      color:#fff !important;
+      font-size:22px !important;
+      font-weight:1000 !important;
+      text-align:center !important;
+      outline:none !important;
+      user-select:text !important;
+      -webkit-user-select:text !important;
+      touch-action:auto !important;
+      padding:6px 10px !important;
+    }
+    #debugPasswordError{
+      display:none;
+      margin-top:8px !important;
+      color:#fecaca !important;
+      font-weight:1000 !important;
+      font-size:13px !important;
+    }
+    .debugModalActions{
+      display:grid !important;
+      grid-template-columns:1fr 1fr !important;
+      gap:9px !important;
+      margin-top:12px !important;
+    }
+
+    #debugJumpPanel{
+      position:fixed !important;
+      left:10px !important;
+      top:calc(132px + var(--safeTop,0px)) !important;
+      z-index:2147483001 !important;
+      display:none;
+      width:min(360px,calc(100vw - 20px)) !important;
+      max-height:calc(100vh - 155px) !important;
+      overflow:auto !important;
+      padding:12px !important;
+      border-radius:18px !important;
+      border:3px solid rgba(255,216,107,.78) !important;
+      background:linear-gradient(180deg,rgba(32,18,7,.98),rgba(8,5,2,.98)) !important;
+      color:#fff4c2 !important;
+      box-shadow:0 12px 38px rgba(0,0,0,.70) !important;
+      font-family:inherit !important;
+      pointer-events:auto !important;
+      touch-action:auto !important;
+      -webkit-overflow-scrolling:touch !important;
+    }
+    #debugJumpPanel h3{
+      margin:0 0 8px !important;
+      color:#ffe28b !important;
+      font-size:18px !important;
+    }
+    #debugJumpPanel .debugNote{
+      font-size:12px !important;
+      line-height:1.35 !important;
+      color:#e8c98b !important;
+      margin-bottom:10px !important;
+      font-weight:900 !important;
+    }
+    #debugJumpPanel .debugGrid{
+      display:grid !important;
+      grid-template-columns:1fr 1fr !important;
+      gap:7px !important;
+    }
+    #debugJumpPanel button,
+    #debugPasswordCard button{
+      border:0 !important;
+      border-radius:12px !important;
+      padding:10px 8px !important;
+      font-family:inherit !important;
+      font-weight:1000 !important;
+      color:#2b1705 !important;
+      background:linear-gradient(180deg,#fff0a8,#ffb33f) !important;
+      box-shadow:0 3px 0 #7a4913 !important;
+      cursor:pointer !important;
+      touch-action:manipulation !important;
+      pointer-events:auto !important;
+    }
+    #debugJumpPanel button:active,
+    #debugPasswordCard button:active{transform:translateY(2px) !important;}
+    #debugJumpPanel button.debugDarkBtn,
+    #debugPasswordCard button.debugDarkBtn{
+      color:#fff7d7 !important;
+      background:linear-gradient(180deg,rgba(70,46,20,.98),rgba(25,14,6,.98)) !important;
+      border:1px solid rgba(255,216,107,.32) !important;
+    }
+    #debugJumpPanel button.debugDangerBtn{
+      grid-column:1 / -1 !important;
+      color:#fff !important;
+      background:linear-gradient(180deg,#b91c1c,#5b0b0b) !important;
+    }
+
+    @media(max-width:760px){
+      #debugOpenBtn{
+        top:calc(118px + var(--safeTop,0px)) !important;
+        left:8px !important;
+        font-size:12px !important;
+        padding:8px 10px !important;
+      }
+      #debugJumpPanel{
+        top:calc(160px + var(--safeTop,0px)) !important;
+        left:8px !important;
+        width:calc(100vw - 16px) !important;
+        max-height:calc(100vh - 172px) !important;
+      }
+    }
+
 </style>
 </head>
 
 <body>
   <div id="gameWrap"></div>
+
+  <!-- Visible password-protected debug tools -->
+  <button id="debugOpenBtn" type="button">🔒 Debug</button>
+
+  <div id="debugPasswordOverlay" aria-label="Debug password panel">
+    <div id="debugPasswordCard">
+      <h3>Developer Debug</h3>
+      <p>Enter password to open chamber jump tools.</p>
+      <input id="debugPasswordInput" type="password" inputmode="numeric" autocomplete="off" placeholder="Password">
+      <div id="debugPasswordError">Wrong password. Try again.</div>
+      <div class="debugModalActions">
+        <button id="debugPasswordCancel" type="button" class="debugDarkBtn">Cancel</button>
+        <button id="debugPasswordUnlock" type="button">Unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="debugJumpPanel" aria-label="Developer chamber jump panel">
+    <h3>Developer Jump Panel</h3>
+    <div class="debugNote">Password accepted. Choose a chamber for testing.</div>
+    <div class="debugGrid">
+      <button type="button" data-debug-jump="1">C1 Start</button>
+      <button type="button" data-debug-jump="2">C2 Torch</button>
+      <button type="button" data-debug-jump="3">C3 Scarab</button>
+      <button type="button" data-debug-jump="4">C4 Bridge</button>
+      <button type="button" data-debug-jump="5">C5 Villagers</button>
+      <button type="button" data-debug-jump="6">C6 Future</button>
+      <button type="button" id="debugUnlockPrevious" class="debugDarkBtn">Unlock Previous</button>
+      <button type="button" id="debugClosePanel" class="debugDarkBtn">Close</button>
+      <button type="button" id="debugClearProgress" class="debugDangerBtn">Clear Saved Progress</button>
+    </div>
+  </div>
 
   <div id="coverPage" aria-label="Game introduction">
     <div class="coverCard cleanCoverCard">
@@ -2483,7 +2690,7 @@ body.quizPageOpen #messageBox{
     <div id="gameTitle">🏺 Uncle Joe and the Key of Product</div>
     <div class="hudPill">Room: <span id="chamberText">Entrance</span></div>
     <div class="hudPill">Jewels: <span id="jewelText">0 / 5</span></div>
-    <div class="hudPill">Stage: <span id="stageHudText">1 / 5</span></div>
+    <div class="hudPill">Stage: <span id="stageHudText">1 / 6</span></div>
     <div class="hudPill">Quiz: <span id="quizHudText">1 / 6</span></div>
   </div>
   <div id="buttonsTopRight">
@@ -2680,6 +2887,8 @@ const wrap = document.getElementById("gameWrap");
     let sapphireCollected = false;
     let restorationKeyVisible = false;
     let restorationKeyCollected = false;
+    let sunGateChallengeStarted = false;
+    let sunSealLitCount = 0;
     let torchLitCount = 0;
     let scarabLightedCount = 0;
     let sandStableCount = 0;
@@ -2688,7 +2897,8 @@ const wrap = document.getElementById("gameWrap");
     let activeScarabIndex = null;
     let activeSandIndex = null;
     let activeVillagerIndex = null;
-    let activeQuizMode = "starting"; // "starting", "torch", "scarab", "sand", or "villager"
+    let activeSunSealIndex = null;
+    let activeQuizMode = "starting"; // "starting", "torch", "scarab", "sand", "villager", or "sun"
     let finalEscapeStarted = false;
     let finalEndingShown = false;
     let finalDoorOpen = false;
@@ -2698,11 +2908,13 @@ const wrap = document.getElementById("gameWrap");
     const sandButtons = [];
     const villagers = [];
     const villagerMeshes = [];
+    const sunSeals = [];
     const villagerEmojis = ["🧑‍🌾","👩‍🌾","👨‍🍳","👩‍🏫","👨‍🔧","👵"];
     const torchChallengeDone = new Set();
     const scarabChallengeDone = new Set();
     const sandChallengeDone = new Set();
     const villagerChallengeDone = new Set();
+    const sunSealChallengeDone = new Set();
     const raycaster = new THREE.Raycaster();
     const aimNdc = new THREE.Vector2(0,0);
     let currentTarget = null;
@@ -2723,11 +2935,14 @@ const wrap = document.getElementById("gameWrap");
         sapphireVisible, sapphireCollected,
         fifthDoorOpen: !!window.fifthDoorOpen,
         restorationKeyVisible, restorationKeyCollected,
+        sunGateChallengeStarted,
+        sunSealLitCount,
         finalEscapeStarted, finalEndingShown, finalDoorOpen,
         torchChallengeDone:Array.from(torchChallengeDone),
         scarabChallengeDone:Array.from(scarabChallengeDone),
         sandChallengeDone:Array.from(sandChallengeDone),
         villagerChallengeDone:Array.from(villagerChallengeDone),
+        sunSealChallengeDone:Array.from(sunSealChallengeDone),
         camera:{
           x:camera.position.x,y:camera.position.y,z:camera.position.z,
           rx:camera.rotation.x,ry:camera.rotation.y,rz:camera.rotation.z
@@ -2786,6 +3001,9 @@ const wrap = document.getElementById("gameWrap");
 
       if(window.fifthDoor) window.fifthDoor.active = !window.fifthDoorOpen;
       if(window.fifthDoorBlocker) window.fifthDoorBlocker.active = !window.fifthDoorOpen;
+
+      if(window.sunGateDoor) window.sunGateDoor.active = !finalDoorOpen;
+      if(window.sunGateDoorBlocker) window.sunGateDoorBlocker.active = !finalDoorOpen;
     }
 
     function setDoorVisual(doorObj, openY, closedY, isOpen){
@@ -2816,6 +3034,7 @@ const wrap = document.getElementById("gameWrap");
         window.villagerHallArrowSign.visible = !!window.fifthDoorOpen;
         if(window.villagerHallArrowSign.userData && window.villagerHallArrowSign.userData.blocker) window.villagerHallArrowSign.userData.blocker.active = !!window.fifthDoorOpen;
       }
+      if(typeof updateSunGateVisual === "function") updateSunGateVisual();
       syncDoorBlockers();
 
       if(window.rubyObj) window.rubyObj.group.visible = !!(rubyVisible && !rubyCollected);
@@ -2911,6 +3130,8 @@ const wrap = document.getElementById("gameWrap");
       sapphireVisible = !!data.sapphireVisible; sapphireCollected = !!data.sapphireCollected;
       window.fifthDoorOpen = !!data.fifthDoorOpen;
       restorationKeyVisible = !!data.restorationKeyVisible; restorationKeyCollected = !!data.restorationKeyCollected;
+      sunGateChallengeStarted = !!data.sunGateChallengeStarted;
+      sunSealLitCount = Number(data.sunSealLitCount) || 0;
       finalEscapeStarted = !!data.finalEscapeStarted;
       finalEndingShown = !!data.finalEndingShown;
       finalDoorOpen = !!data.finalDoorOpen;
@@ -2918,6 +3139,8 @@ const wrap = document.getElementById("gameWrap");
       scarabChallengeDone.clear(); (data.scarabChallengeDone || []).forEach(n=>scarabChallengeDone.add(Number(n)));
       sandChallengeDone.clear(); (data.sandChallengeDone || []).forEach(n=>sandChallengeDone.add(Number(n)));
       villagerChallengeDone.clear(); (data.villagerChallengeDone || []).forEach(n=>villagerChallengeDone.add(Number(n)));
+      sunSealChallengeDone.clear(); (data.sunSealChallengeDone || []).forEach(n=>sunSealChallengeDone.add(Number(n)));
+      sunSealLitCount = sunSealChallengeDone.size || sunSealLitCount;
       if(data.camera){
         camera.position.set(Number(data.camera.x)||0, Number(data.camera.y)||1.65, Number(data.camera.z)||6.5);
         camera.rotation.set(Number(data.camera.rx)||0, Number(data.camera.ry)||0, Number(data.camera.rz)||0);
@@ -2984,11 +3207,41 @@ const wrap = document.getElementById("gameWrap");
       emissive:0x020000,
       emissiveIntensity:.035
     });
+    const matBrightChamberFloor = new THREE.MeshStandardMaterial({
+      color:0xd7a95f,
+      roughness:.78,
+      metalness:.02,
+      emissive:0x3b2208,
+      emissiveIntensity:.20
+    });
+    const matBrightChamberWall = new THREE.MeshStandardMaterial({
+      color:0xb9854d,
+      roughness:.82,
+      metalness:.02,
+      emissive:0x2f1906,
+      emissiveIntensity:.22
+    });
+
+    function addBrightChamberLight(x,z,intensity=1.65,distance=17){
+      const light = new THREE.PointLight(0xffd28a, LOW_POWER ? intensity*.72 : intensity, distance, 1.55);
+      light.position.set(x,3.15,z);
+      light.castShadow = !LOW_POWER;
+      scene.add(light);
+
+      const glow = new THREE.Mesh(
+        new THREE.CircleGeometry(1.05,36),
+        new THREE.MeshBasicMaterial({color:0xffd86b,transparent:true,opacity:.18,side:THREE.DoubleSide})
+      );
+      glow.position.set(x,3.34,z);
+      glow.rotation.x = Math.PI/2;
+      scene.add(glow);
+      return light;
+    }
 
     function addAmbient(){
-      const hemi = new THREE.HemisphereLight(0xffd29a, 0x050201, 0.28);
+      const hemi = new THREE.HemisphereLight(0xffe2a3, 0x1a0c04, LOW_POWER ? 0.46 : 0.62);
       scene.add(hemi);
-      const moon = new THREE.DirectionalLight(0xffc68a, LOW_POWER ? 0.16 : 0.22);
+      const moon = new THREE.DirectionalLight(0xffddaa, LOW_POWER ? 0.32 : 0.46);
       moon.position.set(-5, 12, 8);
       moon.castShadow = !LOW_POWER;
       if(moon.castShadow){
@@ -3612,6 +3865,144 @@ const wrap = document.getElementById("gameWrap");
       return obj;
     }
 
+
+    function addSunSeal(idx,x,z){
+      const group = new THREE.Group();
+      group.position.set(x,.42,z);
+      group.visible = false;
+
+      const base = new THREE.Mesh(
+        new THREE.CylinderGeometry(.72,.84,.16,36),
+        new THREE.MeshStandardMaterial({color:0x4b2604,roughness:.55,metalness:.18,emissive:0x140601,emissiveIntensity:.18})
+      );
+      base.position.y = .05;
+      group.add(base);
+
+      const seal = new THREE.Mesh(
+        new THREE.CylinderGeometry(.50,.50,.10,48),
+        new THREE.MeshStandardMaterial({color:0x51310a,roughness:.38,metalness:.32,emissive:0x180b02,emissiveIntensity:.25})
+      );
+      seal.position.y = .20;
+      group.add(seal);
+
+      const rays = new THREE.Group();
+      const rayMat = new THREE.MeshStandardMaterial({color:0x5a3507,roughness:.42,metalness:.25,emissive:0x170801,emissiveIntensity:.16});
+      for(let i=0;i<12;i++){
+        const r = new THREE.Mesh(new THREE.BoxGeometry(.10,.06,.38), rayMat);
+        const ang = i*Math.PI*2/12;
+        r.position.set(Math.sin(ang)*.72,.22,Math.cos(ang)*.72);
+        r.rotation.y = ang;
+        rays.add(r);
+      }
+      group.add(rays);
+
+      const canvas = document.createElement("canvas");
+      canvas.width = 256; canvas.height = 256;
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0,0,256,256);
+      ctx.fillStyle = "rgba(31,18,4,.95)";
+      ctx.beginPath(); ctx.arc(128,128,108,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle = "#ffd86b"; ctx.lineWidth = 12; ctx.stroke();
+      ctx.fillStyle = "#fff0a8";
+      ctx.font = "bold 98px Georgia,serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(String(idx+1),128,138);
+      const tex = new THREE.CanvasTexture(canvas);
+      if(THREE.sRGBEncoding) tex.encoding = THREE.sRGBEncoding;
+      const label = new THREE.Mesh(
+        new THREE.PlaneGeometry(.72,.72),
+        new THREE.MeshBasicMaterial({map:tex,transparent:true,side:THREE.DoubleSide})
+      );
+      label.position.set(0,1.05,0);
+      label.renderOrder = 25;
+      group.add(label);
+
+      const light = new THREE.PointLight(0xffd86b,0,7,1.6);
+      light.position.set(0,.55,0);
+      group.add(light);
+
+      scene.add(group);
+      const obj = {idx,group,base,seal,rays,label,light,lit:false};
+      sunSeals[idx] = obj;
+      interactables.push({
+        id:"sunSealBtn" + idx,
+        group,
+        position:new THREE.Vector3(x,.65,z),
+        radius:3.8,
+        label:`Solve Sun Seal ${idx+1}`
+      });
+      animated.push({type:"sunSeal",obj,t:idx*.37});
+      return obj;
+    }
+
+    function updateSunGateVisual(){
+      sunSealLitCount = sunSealChallengeDone.size;
+      sunSeals.forEach((obj)=>{
+        if(!obj) return;
+        const lit = sunSealChallengeDone.has(obj.idx);
+        obj.lit = lit;
+        obj.group.visible = !!(restorationKeyCollected && sunGateChallengeStarted && !finalEscapeStarted);
+        if(obj.seal && obj.seal.material){
+          obj.seal.material.color.setHex(lit ? 0xfacc15 : 0x51310a);
+          obj.seal.material.emissive.setHex(lit ? 0xffb703 : 0x180b02);
+          obj.seal.material.emissiveIntensity = lit ? 1.45 : .25;
+          obj.seal.material.needsUpdate = true;
+        }
+        if(obj.base && obj.base.material){
+          obj.base.material.color.setHex(lit ? 0x7a4a05 : 0x4b2604);
+          obj.base.material.emissive.setHex(lit ? 0xf59e0b : 0x140601);
+          obj.base.material.emissiveIntensity = lit ? .55 : .18;
+          obj.base.material.needsUpdate = true;
+        }
+        if(obj.rays){
+          obj.rays.visible = true;
+          obj.rays.children.forEach(r=>{
+            if(r.material){
+              r.material.color.setHex(lit ? 0xffd86b : 0x5a3507);
+              r.material.emissive.setHex(lit ? 0xf59e0b : 0x170801);
+              r.material.emissiveIntensity = lit ? .75 : .16;
+            }
+          });
+        }
+        if(obj.light) obj.light.intensity = lit ? (LOW_POWER ? 1.5 : 2.1) : (obj.idx === sunSealChallengeDone.size && sunGateChallengeStarted && !finalEscapeStarted ? .85 : 0);
+      });
+      if(window.sunGateDoor){
+        const isOpen = !!finalDoorOpen;
+        window.sunGateDoor.active = !isOpen;
+        if(window.sunGateDoor.mesh) window.sunGateDoor.mesh.position.y = isOpen ? 8.8 : 1.9;
+      }
+      if(window.sunGateDoorBlocker) window.sunGateDoorBlocker.active = !finalDoorOpen;
+      if(window.finalExitScene && window.finalExitScene.door && window.finalExitScene.door.mesh){
+        window.finalExitScene.door.mesh.visible = !finalDoorOpen;
+      }
+    }
+
+    function openSunGateChallenge(){
+      sunGateChallengeStarted = true;
+      updateSunGateVisual();
+      showMessage("The Key of Product awakens the Sun Gate of Thousands. Solve all 6 Sun Seals to escape!");
+      saveProgress();
+    }
+
+    function completeSunSealChallenge(idx){
+      if(idx == null || sunSealChallengeDone.has(idx)) return;
+      sunSealChallengeDone.add(idx);
+      sunSealLitCount = sunSealChallengeDone.size;
+      updateSunGateVisual();
+      playChime();
+      burstConfetti(false);
+      if(sunSealLitCount >= 6){
+        showMessage("All 6 Sun Seals are lit! The Sun Gate opens!");
+        startFinalEscapeSequence();
+      }else{
+        showMessage(`Sun Seal ${sunSealLitCount} of 6 is lit. Solve the next 3-digit × 1-digit regrouping challenge.`);
+      }
+      activeSunSealIndex = null;
+      activeQuizMode = "starting";
+      saveProgress();
+    }
+
     function addRestorationKey(){
       const group = new THREE.Group();
       group.position.set(0,1.35,-86.0);
@@ -4013,11 +4404,9 @@ const wrap = document.getElementById("gameWrap");
       saveProgress();
     }
 
-    function randomQuestionForScarab(){
-      // Stage 3: 3-digit × 1-digit.
-      // To avoid repeated 111×7/8/9 questions, this stage uses controlled regrouping
-      // while keeping the answer within 3 digits.
-      return randomQuestionForStage({digits:3,type:"controlled",mode:"scarab",name:"Scarab Puzzle",skill:"3d × 1d, varied"});
+    function randomQuestionForScarab(index=activeScarabIndex){
+      // Stage 3: 3-digit × 1-digit. Fixed by scarab number.
+      return fixedQuestionForMode("scarab", index);
     }
 
     
@@ -4049,7 +4438,7 @@ function showLightBeam(){
       quiz.stageIndex = 0;
       quiz.questionInStage = 1;
       quiz.solvedTotal = 0;
-      loadQuestion(randomQuestionForScarab());
+      loadQuestion(randomQuestionForScarab(idx));
       openPuzzle();
       setFeedback("hint","Scarab Puzzle Chamber: solve this varied 3-digit × 1-digit question to light the scarab symbol.");
     }
@@ -4122,7 +4511,7 @@ function showLightBeam(){
       quiz.stageIndex = 0;
       quiz.questionInStage = 1;
       quiz.solvedTotal = 0;
-      loadQuestion(randomQuestionForVillager());
+      loadQuestion(randomQuestionForVillager(idx));
       openPuzzle();
       setFeedback("hint", `Spellbound Villagers Hall: solve this regrouping question to free Villager ${idx+1}.`);
     }
@@ -4506,17 +4895,80 @@ function addTablet(){
       return sign;
     }
 
+
+    function addBrightSunGateSign(){
+      const canvas = document.createElement("canvas");
+      canvas.width = 1024;
+      canvas.height = 512;
+      const ctx = canvas.getContext("2d");
+      const bg = ctx.createLinearGradient(0,0,0,512);
+      bg.addColorStop(0,"#fff1a8");
+      bg.addColorStop(.45,"#f59e0b");
+      bg.addColorStop(1,"#78350f");
+      ctx.fillStyle = bg;
+      ctx.fillRect(0,0,1024,512);
+      ctx.lineWidth = 24;
+      ctx.strokeStyle = "#fff7ad";
+      ctx.strokeRect(28,28,968,456);
+      ctx.lineWidth = 10;
+      ctx.strokeStyle = "#7c2d12";
+      ctx.strokeRect(54,54,916,404);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "rgba(255,255,255,.65)";
+      ctx.beginPath();
+      ctx.arc(512,92,58,0,Math.PI*2);
+      ctx.fill();
+      ctx.fillStyle = "#4a1f05";
+      ctx.font = "bold 74px Georgia,serif";
+      ctx.fillText("☀ SUN GATE ☀",512,190);
+      ctx.font = "bold 88px Georgia,serif";
+      ctx.fillText("OF THOUSANDS",512,306);
+      ctx.font = "bold 34px Georgia,serif";
+      ctx.fillText("Solve 6 Sun Seals to open the final exit",512,410);
+
+      const tex = new THREE.CanvasTexture(canvas);
+      if(THREE.sRGBEncoding) tex.encoding = THREE.sRGBEncoding;
+      const sign = new THREE.Mesh(
+        new THREE.PlaneGeometry(5.7,2.85),
+        new THREE.MeshBasicMaterial({map:tex,transparent:false,side:THREE.DoubleSide})
+      );
+      sign.position.set(0,2.35,-87.33);
+      sign.renderOrder = 50;
+      scene.add(sign);
+
+      const halo = new THREE.Mesh(
+        new THREE.PlaneGeometry(6.35,3.25),
+        new THREE.MeshBasicMaterial({color:0xfff2a8,transparent:true,opacity:.20,side:THREE.DoubleSide})
+      );
+      halo.position.set(0,2.35,-87.37);
+      halo.renderOrder = 45;
+      scene.add(halo);
+
+      const light = new THREE.PointLight(0xffd86b, LOW_POWER ? 2.2 : 3.2, 16, 1.25);
+      light.position.set(0,2.7,-86.2);
+      scene.add(light);
+      animated.push({type:"sunGateSign",sign,halo,light,t:0});
+      return sign;
+    }
+
     function buildWorld(){
       addAmbient();
-      addFloor(0,0,15,15,matStartDarkFloor);
-      addFloor(0,-13.5,6,13,matTorchDarkFloor);
-      addFloor(0,-28.5,15,15);
+      addBrightChamberLight(0,0,1.55,16);
+      addBrightChamberLight(0,-28.5,1.65,17);
+      addBrightChamberLight(0,-49.0,1.75,20);
+      addBrightChamberLight(0,-64.5,1.45,13);
+      addBrightChamberLight(0,-78.5,1.85,20);
+      addBrightChamberLight(0,-86.0,2.25,18);
+      addFloor(0,0,15,15,matBrightChamberFloor);
+      addFloor(0,-13.5,6,13,matTorchDarkFloor); // TORCH CORRIDOR REMAINS DARK
+      addFloor(0,-28.5,15,15,matBrightChamberFloor);
 
-      addWall(0,7.5,15,.55,3.4,matStartDarkWall);
-      addWall(-7.5,0,.55,15,3.4,matStartDarkWall);
-      addWall(7.5,0,.55,15,3.4,matStartDarkWall);
-      addWall(-5.25,-7.5,4.5,.55,3.4,matStartDarkWall);
-      addWall(5.25,-7.5,4.5,.55,3.4,matStartDarkWall);
+      addWall(0,7.5,15,.55,3.4,matBrightChamberWall);
+      addWall(-7.5,0,.55,15,3.4,matBrightChamberWall);
+      addWall(7.5,0,.55,15,3.4,matBrightChamberWall);
+      addWall(-5.25,-7.5,4.5,.55,3.4,matBrightChamberWall);
+      addWall(5.25,-7.5,4.5,.55,3.4,matBrightChamberWall);
       addWall(-3.25,-13.5,.55,13,3.4,matTorchDarkWall);
       addWall(3.25,-13.5,.55,13,3.4,matTorchDarkWall);
       window.firstDoor = addWall(0,-7.72,15.0,.72,3.8,matDoor,true);
@@ -4544,8 +4996,8 @@ function addTablet(){
       scene.add(window.firstDoorLabel);
 
 
-      addWall(-7.5,-28.5,.55,15);
-      addWall(7.5,-28.5,.55,15);
+      addWall(-7.5,-28.5,.55,15,3.4,matBrightChamberWall);
+      addWall(7.5,-28.5,.55,15,3.4,matBrightChamberWall);
       // Chamber 3 to Chamber 4 doorway: leave a real central gap for the bridge door.
       addWall(-5.65,-36,3.7,.55);
       addWall(5.65,-36,3.7,.55);
@@ -4561,10 +5013,10 @@ function addTablet(){
       window.secretDoorBlocker = addSolidObstacle(null,0,-21,15.6,1.2,true);
 
       // Chamber 4: Bridge Crossing Chamber
-      addFloor(0,-49.0,15,22);
-      addFloor(0,-64.5,15,8);
-      addWall(-7.5,-49,.55,22);
-      addWall(7.5,-49,.55,22);
+      addFloor(0,-49.0,15,22,matBrightChamberFloor);
+      addFloor(0,-64.5,15,8,matBrightChamberFloor);
+      addWall(-7.5,-49,.55,22,3.4,matBrightChamberWall);
+      addWall(7.5,-49,.55,22,3.4,matBrightChamberWall);
       // Chamber 4 to reward corridor doorway: leave a real central gap.
       addWall(-5.65,-60,3.7,.55);
       addWall(5.65,-60,3.7,.55);
@@ -4572,18 +5024,20 @@ function addTablet(){
       window.fifthDoorOpen = false;
       window.fourthDoor = addWall(0,-59.72,15.0,.72,3.8,matDoor,true);
       window.fourthDoorBlocker = addSolidObstacle(null,0,-59.72,15.6,1.2,true);
-      addWall(-7.5,-64.5,.55,8);
-      addWall(7.5,-64.5,.55,8);
+      addWall(-7.5,-64.5,.55,8,3.4,matBrightChamberWall);
+      addWall(7.5,-64.5,.55,8,3.4,matBrightChamberWall);
       window.fifthDoorOpen = false;
       window.fifthDoor = addWall(0,-68.22,15.0,.72,3.8,matDoor,true);
       window.fifthDoorBlocker = addSolidObstacle(null,0,-68.22,15.6,1.2,true);
       window.villagerHallArrowSign = addVillagerHallArrowSign();
 
       // Chamber 5: Spellbound Villagers Hall
-      addFloor(0,-78.5,15,19);
-      addWall(-7.5,-78.5,.55,19);
-      addWall(7.5,-78.5,.55,19);
-      addWall(0,-88,15,.55);
+      addFloor(0,-78.5,15,19,matBrightChamberFloor);
+      addWall(-7.5,-78.5,.55,19,3.4,matBrightChamberWall);
+      addWall(7.5,-78.5,.55,19,3.4,matBrightChamberWall);
+      // Chamber 6: Sun Gate of Thousands final challenge.
+      window.sunGateDoor = addWall(0,-88,15.0,.72,3.8,matDoor,true);
+      window.sunGateDoorBlocker = addSolidObstacle(null,0,-88,15.6,1.2,true);
 
       addPillar(-5.5,4.8); addPillar(5.5,4.8); addPillar(-5.5,-4.8); addPillar(5.5,-4.8);
       addPillar(-5.2,-32.2); addPillar(5.2,-32.2);
@@ -4627,11 +5081,20 @@ function addTablet(){
       addSpellboundVillager(4,0,-82.2);
       addSpellboundVillager(5,4.2,-81.0);
 
+      // Chamber 6: Sun Gate of Thousands — six 3-digit × 1-digit regrouping seals.
+      addSunSeal(0,-5.1,-84.7);
+      addSunSeal(1,-3.0,-86.0);
+      addSunSeal(2,-1.0,-84.7);
+      addSunSeal(3,1.0,-86.0);
+      addSunSeal(4,3.0,-84.7);
+      addSunSeal(5,5.1,-86.0);
+
       addHieroglyphPanel(-7.18,-1.8,Math.PI/2,"𓃭 𓂀 𓆣\nSOLVE");
       addHieroglyphPanel(7.18,-2.2,-Math.PI/2,"𓋹 𓊽 𓎛\nESCAPE");
       addHieroglyphPanel(0,-35.68,0,"EMERALD\nAWAITS");
       addHieroglyphPanel(0,-59.35,0,"MAGIC WAND\nAHEAD");
       addHieroglyphPanel(0,-67.85,0,"SPELLBOUND\nVILLAGERS");
+      addBrightSunGateSign();
 
       addTablet();
       window.rubyObj = addRuby();
@@ -4741,6 +5204,7 @@ function addTablet(){
         if((o === window.thirdDoor || o === window.thirdDoorBlocker) && window.thirdDoorOpen) continue;
         if((o === window.fourthDoor || o === window.fourthDoorBlocker) && window.fourthDoorOpen) continue;
         if((o === window.fifthDoor || o === window.fifthDoorBlocker) && window.fifthDoorOpen) continue;
+        if((o === window.sunGateDoor || o === window.sunGateDoorBlocker) && finalDoorOpen) continue;
 
         if(!o.active) continue;
         if(x>o.minX-r && x<o.maxX+r && z>o.minZ-r && z<o.maxZ+r) return true;
@@ -4846,6 +5310,10 @@ function addTablet(){
           const idx = Number(String(item.id).replace("villagerBtn",""));
           if(!window.fifthDoorOpen || !sapphireCollected || villagerChallengeDone.has(idx) || idx !== villagerChallengeDone.size) continue;
         }
+        if(String(item.id || "").startsWith("sunSealBtn")){
+          const idx = Number(String(item.id).replace("sunSealBtn",""));
+          if(!restorationKeyCollected || !sunGateChallengeStarted || finalEscapeStarted || sunSealChallengeDone.has(idx) || idx !== sunSealChallengeDone.size) continue;
+        }
         if(item.id==="tablet" && doorOpen) continue;
         const dist = Math.hypot(camera.position.x-item.position.x,camera.position.z-item.position.z);
         if(dist < item.radius && dist < nearest){
@@ -4860,7 +5328,8 @@ function addTablet(){
       }else{
         promptEl.style.display = "none";
       }
-      if(camera.position.z < -68.0) chamberText.textContent = `Spellbound Villagers (${villagerFreedCount}/6)`;
+      if(camera.position.z < -83.0 && restorationKeyCollected && !finalEscapeStarted) chamberText.textContent = `Sun Gate (${sunSealLitCount}/6)`;
+      else if(camera.position.z < -68.0) chamberText.textContent = `Spellbound Villagers (${villagerFreedCount}/6)`;
       else if(camera.position.z < -36.0) chamberText.textContent = `Bridge Crossing (${sandStableCount}/6)`;
       else if(camera.position.z < -21.5) chamberText.textContent = `Scarab Puzzle (${scarabLightedCount}/6)`;
       else if(camera.position.z < -7.5) chamberText.textContent = `Torch Corridor (${torchLitCount}/${TORCH_TOTAL})`;
@@ -4896,7 +5365,7 @@ function addTablet(){
         quiz.stageIndex = 0;
         quiz.questionInStage = 1;
         quiz.solvedTotal = 0;
-        loadQuestion(randomQuestionForTorch());
+        loadQuestion(randomQuestionForTorch(idx));
         openPuzzle();
         setFeedback("hint", "Torch Corridor: solve this 2-digit × 1-digit question to light one torch.");
       }
@@ -4915,7 +5384,7 @@ function addTablet(){
         quiz.stageIndex = 0;
         quiz.questionInStage = 1;
         quiz.solvedTotal = 0;
-        loadQuestion(randomQuestionForScarab());
+        loadQuestion(randomQuestionForScarab(idx));
         openPuzzle();
         setFeedback("hint", `Scarab ${idx+1}: solve this 3-digit × 1-digit multiplication algorithm. When correct, this scarab will light up.`);
       }
@@ -4934,7 +5403,7 @@ function addTablet(){
         quiz.stageIndex = 0;
         quiz.questionInStage = 1;
         quiz.solvedTotal = 0;
-        loadQuestion(randomQuestionForSand());
+        loadQuestion(randomQuestionForSand(idx));
         openPuzzle();
         setFeedback("hint", `Bridge Crossing: solve this 2-digit × 1-digit regrouping question to take Step ${idx+1}.`);
       }
@@ -4949,6 +5418,25 @@ function addTablet(){
           return;
         }
         openVillagerQuestion(idx);
+      }
+      if(String(currentTarget.id || "").startsWith("sunSealBtn")){
+        const idx = Number(String(currentTarget.id).replace("sunSealBtn",""));
+        if(sunSealChallengeDone.has(idx)){
+          showMessage("This Sun Seal is already lit. Proceed to the next seal.");
+          return;
+        }
+        if(idx !== sunSealChallengeDone.size){
+          showMessage(`Go to Sun Seal ${sunSealChallengeDone.size + 1} first.`);
+          return;
+        }
+        activeQuizMode = "sun";
+        activeSunSealIndex = idx;
+        quiz.stageIndex = 0;
+        quiz.questionInStage = 1;
+        quiz.solvedTotal = 0;
+        loadQuestion(randomQuestionForSunSeal(idx));
+        openPuzzle();
+        setFeedback("hint", `Sun Gate of Thousands: solve this 3-digit × 1-digit regrouping question to light Sun Seal ${idx+1}.`);
       }
     }
 
@@ -4977,6 +5465,7 @@ function addTablet(){
     }
 
 function openPuzzle(){
+      currentTarget = null; // anti-stale debug: avoid reusing the previous object prompt
       document.documentElement.classList.add("quizPageOpen");
       document.body.classList.add("quizPageOpen");
       modalShade.style.display = "block";
@@ -4993,6 +5482,7 @@ function openPuzzle(){
       setTimeout(()=>setActiveEntry(document.getElementById("currentDigitInput")),60);
     }
     function closePuzzle(){
+      currentTarget = null; // anti-stale debug: force fresh nearest-object detection
       modalShade.style.display = "none";
       modalShade.classList.remove("showScroll");
       modalShade.classList.remove("pageScrollMode");
@@ -5122,14 +5612,23 @@ function openPuzzle(){
       if(finalEscapeStarted) return;
       finalEscapeStarted = true;
       finalDoorOpen = true;
+      if(window.sunGateDoor){
+        window.sunGateDoor.active = false;
+        if(window.sunGateDoor.mesh) window.sunGateDoor.mesh.position.y = 8.8;
+      }
+      if(window.sunGateDoorBlocker) window.sunGateDoorBlocker.active = false;
+      updateSunGateVisual();
       saveProgress();
       if(window.finalExitScene){
         window.finalExitScene.glow.visible = true;
         window.finalExitScene.forest.visible = true;
         if(window.finalExitScene.sunLight) window.finalExitScene.sunLight.intensity = LOW_POWER ? 1.4 : 2.4;
-        if(window.finalExitScene.door) window.finalExitScene.door.active = false;
+        if(window.finalExitScene.door){
+          window.finalExitScene.door.active = false;
+          if(window.finalExitScene.door.mesh) window.finalExitScene.door.mesh.visible = false;
+        }
       }
-      showMessage("You use the Key of Product to unlock the final door. The happy villagers walk out into the bright forest!");
+      showMessage("The Sun Gate opens! The happy villagers walk out into the bright forest!");
       playStoneMove();
       playVictory();
       burstConfetti(true);
@@ -5216,11 +5715,11 @@ function openPuzzle(){
       if(restorationKeyCollected) return;
       restorationKeyCollected = true;
       updateJewelCollection();
-      showMessage("You found the Key of Product! Unlock the final door and lead everyone to safety.");
+      showMessage("You found the Key of Product! The Sun Gate of Thousands awakens for the final challenge.");
       playVictory();
       burstConfetti(true);
       if(window.restorationKeyObj) window.restorationKeyObj.group.visible = false;
-      startFinalEscapeSequence();
+      openSunGateChallenge();
       saveProgress();
     }
 
@@ -5387,6 +5886,18 @@ function openPuzzle(){
           }
           if(obj.light) obj.light.intensity = obj.freed ? (1.25 + Math.sin(elapsed*3 + obj.idx)*.25) : (1.0 + Math.sin(elapsed*4 + obj.idx)*.2);
         }
+        if(a.type==="sunGateSign" && a.sign){
+          a.t += dt;
+          if(a.halo) a.halo.material.opacity = .16 + (Math.sin(elapsed*2.1)+1)*.045;
+          if(a.light) a.light.intensity = (LOW_POWER ? 1.9 : 2.9) + Math.sin(elapsed*2.7)*.35;
+        }
+        if(a.type==="sunSeal" && a.obj && a.obj.group.visible){
+          a.t += dt;
+          if(a.obj.group) a.obj.group.rotation.y += dt*.35;
+          if(a.obj.label) a.obj.label.lookAt(camera.position.x, a.obj.label.position.y + a.obj.group.position.y, camera.position.z);
+          if(a.obj.rays) a.obj.rays.rotation.y += dt*(a.obj.lit ? 1.1 : .45);
+          if(a.obj.light) a.obj.light.intensity = a.obj.lit ? (1.6 + Math.sin(elapsed*3 + a.obj.idx)*.35) : a.obj.light.intensity;
+        }
         if(a.type==="restorationKey" && a.group.visible){
           a.t += dt;
           a.group.position.y = 1.35 + Math.sin(elapsed*2.2)*.12;
@@ -5505,6 +6016,84 @@ function openPuzzle(){
     // Timetable coverage plan:
     // Stage 1 and 2 lean towards ×1 to ×5, but still include higher facts.
     // Stage 3 to 5 lean towards ×6 to ×9, but still include some earlier facts.
+
+    const UNIQUE_QUESTION_BANKS = {
+      starting:[
+        {multiplicand:6,multiplier:7},
+        {multiplicand:8,multiplier:4},
+        {multiplicand:9,multiplier:5},
+        {multiplicand:7,multiplier:8},
+        {multiplicand:4,multiplier:6},
+        {multiplicand:3,multiplier:9}
+      ],
+      torch:[
+        {multiplicand:12,multiplier:3},
+        {multiplicand:21,multiplier:4},
+        {multiplicand:32,multiplier:3},
+        {multiplicand:41,multiplier:2},
+        {multiplicand:11,multiplier:5},
+        {multiplicand:22,multiplier:4}
+      ],
+      scarab:[
+        {multiplicand:123,multiplier:3},
+        {multiplicand:214,multiplier:2},
+        {multiplicand:128,multiplier:7},
+        {multiplicand:143,multiplier:6},
+        {multiplicand:109,multiplier:8},
+        {multiplicand:132,multiplier:7}
+      ],
+      sand:[
+        {multiplicand:27,multiplier:6},
+        {multiplicand:38,multiplier:7},
+        {multiplicand:49,multiplier:8},
+        {multiplicand:57,multiplier:9},
+        {multiplicand:68,multiplier:5},
+        {multiplicand:76,multiplier:4}
+      ],
+      villager:[
+        {multiplicand:36,multiplier:6},
+        {multiplicand:47,multiplier:7},
+        {multiplicand:58,multiplier:8},
+        {multiplicand:69,multiplier:9},
+        {multiplicand:74,multiplier:5},
+        {multiplicand:89,multiplier:3}
+      ],
+      sun:[
+        {multiplicand:326,multiplier:4},
+        {multiplicand:487,multiplier:3},
+        {multiplicand:618,multiplier:5},
+        {multiplicand:734,multiplier:6},
+        {multiplicand:859,multiplier:7},
+        {multiplicand:928,multiplier:8}
+      ]
+    };
+
+    /*
+      QUESTION BANK VALIDATION NOTE:
+      - 36 questions total.
+      - No exact repeated multiplication question.
+      - No repeated product answer.
+      - Stage 2 is no-regrouping 2d × 1d.
+      - Stages 4 and 5 are regrouping 2d × 1d.
+      - Stage 6 is regrouping 3d × 1d with 4-digit products.
+    */
+
+    function bankQuestionForMode(mode,index=0){
+      const bank = UNIQUE_QUESTION_BANKS[mode];
+      if(!bank || !bank.length) return null;
+      const q = bank[Math.max(0,index) % bank.length];
+      return {multiplicand:q.multiplicand, multiplier:q.multiplier};
+    }
+
+    function fixedQuestionForMode(mode,index=0){
+      // Strong anti-repeat guard:
+      // One-question chamber challenges must use their object index directly.
+      // Do not rely on quiz.questionInStage because it resets to 1 for every object.
+      const q = bankQuestionForMode(mode, Math.max(0, Number(index) || 0));
+      if(q) return q;
+      return randomQuestionForStage({digits:1,type:"any",mode:"starting",index:0});
+    }
+
     const MULTIPLIER_SEQUENCES = {
       starting:[1,2,3,4,5,6],
       torch:[1,2,3,4,5,7],
@@ -5523,6 +6112,7 @@ function openPuzzle(){
       if(mode === "scarab") return Math.max(0, Number(activeScarabIndex) || 0);
       if(mode === "sand") return Math.max(0, Number(activeSandIndex) || 0);
       if(mode === "villager") return Math.max(0, Number(activeVillagerIndex) || 0);
+      if(mode === "sun") return Math.max(0, Number(activeSunSealIndex) || 0);
       return Math.max(0, (Number(quiz.questionInStage) || 1) - 1);
     }
 
@@ -5778,12 +6368,17 @@ function openPuzzle(){
         $("stageNameText").textContent = `Stage 4: Bridge Crossing Chamber — 2d × 1d, with regrouping`;
         $("progressText").textContent = `Bridge Step ${Math.min(sandStableCount + 1, 6)} of 6`;
       }else if(activeQuizMode === "villager"){
-        $("stageHudText").textContent = `5 / 5`;
+        $("stageHudText").textContent = `5 / 6`;
         $("quizHudText").textContent = `${villagerFreedCount + 1} / 6`;
         $("stageNameText").textContent = `Stage 5: Spellbound Villagers Hall — Magic Wand Regrouping`;
         $("progressText").textContent = `Villager ${Math.min(villagerFreedCount + 1, 6)} of 6`;
+      }else if(activeQuizMode === "sun"){
+        $("stageHudText").textContent = `6 / 6`;
+        $("quizHudText").textContent = `${sunSealLitCount + 1} / 6`;
+        $("stageNameText").textContent = `Stage 6: Sun Gate of Thousands — 3d × 1d, regrouping to 4-digit product`;
+        $("progressText").textContent = `Sun Seal ${Math.min(sunSealLitCount + 1, 6)} of 6`;
       }else{
-        $("stageHudText").textContent = `1 / 5`;
+        $("stageHudText").textContent = `1 / 6`;
         $("quizHudText").textContent = `${Math.min(totalQuestionNumber(), TOTAL_QUESTIONS)} / ${TOTAL_QUESTIONS}`;
         $("stageNameText").textContent = `Stage 1: ${stage.name} — ${stage.slight}`;
         $("progressText").textContent = `Question ${quiz.questionInStage} of ${QUESTIONS_PER_STAGE}`;
@@ -5810,7 +6405,7 @@ function openPuzzle(){
       const floatingCheckBtn = $("floatingCheckBtn");
       if(floatingCheckBtn){
         const completedQuestion = state.done >= steps.length;
-        floatingCheckBtn.textContent = completedQuestion ? (activeQuizMode === "torch" ? "Light" : (activeQuizMode === "scarab" ? "Light" : (activeQuizMode === "sand" ? "Step" : (activeQuizMode === "villager" ? "Free" : (totalQuestionNumber() >= TOTAL_QUESTIONS ? "Open" : "Next"))))) : "Check";
+        floatingCheckBtn.textContent = completedQuestion ? (activeQuizMode === "torch" ? "Light" : (activeQuizMode === "scarab" ? "Light" : (activeQuizMode === "sand" ? "Step" : (activeQuizMode === "villager" ? "Free" : (activeQuizMode === "sun" ? "Seal" : (totalQuestionNumber() >= TOTAL_QUESTIONS ? "Open" : "Next")))))) : "Check";
         floatingCheckBtn.classList.toggle("next", completedQuestion);
         floatingCheckBtn.style.display = (modalShade.style.display !== "none") ? "block" : "none";
       }
@@ -5826,7 +6421,7 @@ function openPuzzle(){
       $("btnCheck").disabled = completedQuestion;
       $("btnHint").disabled = completedQuestion;
       $("btnNextQuestion").style.display = completedQuestion ? "inline-flex" : "none";
-      $("btnNextQuestion").textContent = activeQuizMode === "torch" ? "Light Torch ▶" : (activeQuizMode === "scarab" ? "Light Scarab ▶" : (activeQuizMode === "sand" ? "Take Step ▶" : (activeQuizMode === "villager" ? "Free Villager ▶" : (totalQuestionNumber() >= TOTAL_QUESTIONS ? "Open Door" : "Next Question ▶"))));
+      $("btnNextQuestion").textContent = activeQuizMode === "torch" ? "Light Torch ▶" : (activeQuizMode === "scarab" ? "Light Scarab ▶" : (activeQuizMode === "sand" ? "Take Step ▶" : (activeQuizMode === "villager" ? "Free Villager ▶" : (activeQuizMode === "sun" ? "Light Sun Seal ▶" : (totalQuestionNumber() >= TOTAL_QUESTIONS ? "Open Door" : "Next Question ▶")))));
 
       document.querySelectorAll(".pvInput").forEach(el=>{
         el.addEventListener("pointerdown", ev => {
@@ -5922,6 +6517,8 @@ function openPuzzle(){
     function randomQuestionForStage(stage){
       const mode = stage.mode || "starting";
       const index = Number.isFinite(stage.index) ? stage.index : currentModeQuestionIndex(mode);
+      const bankQ = bankQuestionForMode(mode,index);
+      if(bankQ) return bankQ;
       const multiplier = Number.isFinite(stage.multiplier) ? stage.multiplier : multiplierForMode(mode, index);
       const digits = stage.digits;
 
@@ -5942,25 +6539,38 @@ function openPuzzle(){
       return {multiplicand:124,multiplier:6};
     }
 
-    function randomQuestionForTorch(){
+    function randomQuestionForTorch(index=activeTorchIndex){
       // Stage 2: 2-digit × 1-digit without regrouping.
-      // Uses more ×1 to ×5 facts, with one higher fact included.
-      return randomQuestionForStage({digits:2,type:"without",mode:"torch",name:"Torch Corridor",skill:"2d × 1d, no regrouping"});
+      return fixedQuestionForMode("torch", index);
     }
 
-    function randomQuestionForSand(){
-      // 2-digit × 1-digit with regrouping.
-      return randomQuestionForStage({digits:2,type:"with",mode:"sand",name:"Bridge Step",skill:"2d × 1d, with regrouping"});
+    function randomQuestionForSand(index=activeSandIndex){
+      // Stage 4: 2-digit × 1-digit with regrouping. Fixed by bridge step number.
+      return fixedQuestionForMode("sand", index);
     }
 
-    function randomQuestionForVillager(){
-      // Magic Wand spell: regrouping practice.
-      return randomQuestionForStage({digits:2,type:"with",mode:"villager",name:"Spellbound Villager",skill:"2d × 1d, with regrouping"});
+    function randomQuestionForVillager(index=activeVillagerIndex){
+      // Stage 5: 2-digit × 1-digit with regrouping. Fixed by villager number.
+      return fixedQuestionForMode("villager", index);
     }
+
+    function randomQuestionForSunSeal(index=activeSunSealIndex){
+      // Stage 6: 3-digit × 1-digit with regrouping to 4-digit product.
+      // Fixed by Sun Seal number.
+      return fixedQuestionForMode("sun", index);
+    }
+
+    /*
+      SUN SEAL UNIQUE QUESTION RULE:
+      activeSunSealIndex must be used when choosing a Sun Gate question.
+      Do not use quiz.questionInStage here, because every seal opens as a single-question quiz.
+    */
+
 
 
     function loadQuestion(q){
       question = {multiplicand:q.multiplicand,multiplier:q.multiplier};
+      try{ console.log("[UJ question loaded]", activeQuizMode, question.multiplicand + " × " + question.multiplier, "indices", {torch:activeTorchIndex, scarab:activeScarabIndex, sand:activeSandIndex, villager:activeVillagerIndex, sun:activeSunSealIndex}); }catch(e){}
       steps = computeSteps();
       state = buildInitialState();
       quiz.questionComplete = false;
@@ -6000,6 +6610,11 @@ function openPuzzle(){
       if(activeQuizMode === "villager"){
         closePuzzle();
         completeVillagerChallenge(activeVillagerIndex);
+        return;
+      }
+      if(activeQuizMode === "sun"){
+        closePuzzle();
+        completeSunSealChallenge(activeSunSealIndex);
         return;
       }
 
@@ -6119,6 +6734,15 @@ function openPuzzle(){
             if(activeQuizMode === "villager" && activeVillagerIndex === solvedVillagerIndex){
               closePuzzle();
               completeVillagerChallenge(solvedVillagerIndex);
+            }
+          }, 650);
+        }else if(activeQuizMode === "sun"){
+          setFeedback("ok", `<b>Correct.</b> Lighting this Sun Seal...`);
+          const solvedSunSealIndex = activeSunSealIndex;
+          setTimeout(()=>{
+            if(activeQuizMode === "sun" && activeSunSealIndex === solvedSunSealIndex){
+              closePuzzle();
+              completeSunSealChallenge(solvedSunSealIndex);
             }
           }, 650);
         }else if(totalQuestionNumber() >= TOTAL_QUESTIONS){
@@ -6306,6 +6930,279 @@ function openPuzzle(){
     document.documentElement.classList.remove("quizPageOpen");
     document.body.classList.remove("quizPageOpen");
     setTimeout(updateAlgorithmButtonVisibility, 0);
+
+
+    /* ===== Password-protected visible debug panel wiring ===== */
+    (function setupVisiblePasswordDebugPanel(){
+      const DEBUG_PASSWORD = "1124";
+
+      const debugOpenBtn = document.getElementById("debugOpenBtn");
+      const pwOverlay = document.getElementById("debugPasswordOverlay");
+      const pwInput = document.getElementById("debugPasswordInput");
+      const pwUnlock = document.getElementById("debugPasswordUnlock");
+      const pwCancel = document.getElementById("debugPasswordCancel");
+      const pwError = document.getElementById("debugPasswordError");
+      const panel = document.getElementById("debugJumpPanel");
+
+      function fillDebugSet(setObj,n){
+        if(!setObj || !setObj.clear) return;
+        setObj.clear();
+        for(let i=0;i<n;i++) setObj.add(i);
+      }
+
+      function showDebugPassword(){
+        if(!pwOverlay) return;
+        pwOverlay.style.display = "flex";
+        if(pwError) pwError.style.display = "none";
+        if(pwInput){
+          pwInput.value = "";
+          setTimeout(()=>pwInput.focus(),80);
+        }
+      }
+
+      function hideDebugPassword(){
+        if(pwOverlay) pwOverlay.style.display = "none";
+      }
+
+      function showDebugPanel(){
+        hideDebugPassword();
+        if(panel) panel.style.display = "block";
+      }
+
+      function resetDebugState(){
+        doorOpen = false;
+        rubyVisible = false;
+        rubyCollected = false;
+
+        window.secondDoorOpen = false;
+        topazVisible = false;
+        topazCollected = false;
+
+        window.thirdDoorOpen = false;
+        emeraldVisible = false;
+        emeraldCollected = false;
+
+        window.fourthDoorOpen = false;
+        sapphireVisible = false;
+        sapphireCollected = false;
+
+        window.fifthDoorOpen = false;
+        restorationKeyVisible = false;
+        restorationKeyCollected = false;
+
+        sunGateChallengeStarted = false;
+        sunSealLitCount = 0;
+        finalEscapeStarted = false;
+        finalEndingShown = false;
+        finalDoorOpen = false;
+
+        fillDebugSet(torchChallengeDone,0);
+        fillDebugSet(scarabChallengeDone,0);
+        fillDebugSet(sandChallengeDone,0);
+        fillDebugSet(villagerChallengeDone,0);
+        fillDebugSet(sunSealChallengeDone,0);
+
+        torchLitCount = 0;
+        scarabLightedCount = 0;
+        sandStableCount = 0;
+        villagerFreedCount = 0;
+        sunSealLitCount = 0;
+
+        activeQuizMode = "starting";
+        activeTorchIndex = null;
+        activeScarabIndex = null;
+        activeSandIndex = null;
+        activeVillagerIndex = null;
+        activeSunSealIndex = null;
+      }
+
+      function applyDebugStateForChamber(chamber){
+        resetDebugState();
+
+        if(chamber >= 2){
+          doorOpen = true;
+          rubyVisible = false;
+          rubyCollected = true;
+        }
+
+        if(chamber >= 3){
+          window.secondDoorOpen = true;
+          topazVisible = false;
+          topazCollected = true;
+          fillDebugSet(torchChallengeDone,6);
+          torchLitCount = 6;
+        }
+
+        if(chamber >= 4){
+          window.thirdDoorOpen = true;
+          emeraldVisible = false;
+          emeraldCollected = true;
+          fillDebugSet(scarabChallengeDone,6);
+          scarabLightedCount = 6;
+        }
+
+        if(chamber >= 5){
+          window.fourthDoorOpen = true;
+          window.fifthDoorOpen = true;
+          sapphireVisible = false;
+          sapphireCollected = true;
+          fillDebugSet(sandChallengeDone,6);
+          sandStableCount = 6;
+        }
+
+        if(chamber >= 6){
+          fillDebugSet(villagerChallengeDone,6);
+          villagerFreedCount = 6;
+          window.fifthDoorOpen = true;
+          restorationKeyVisible = false;
+          restorationKeyCollected = true;
+          sunGateChallengeStarted = true;
+          fillDebugSet(sunSealChallengeDone,0);
+          sunSealLitCount = 0;
+        }
+      }
+
+      function debugPosition(chamber){
+        const map = {
+          1:{x:0,y:1.55,z:4.2, ry:0},
+          2:{x:0,y:1.55,z:-10.4, ry:0},
+          3:{x:0,y:1.55,z:-24.6, ry:0},
+          4:{x:0,y:1.55,z:-39.0, ry:0},
+          5:{x:0,y:1.55,z:-70.4, ry:0},
+          6:{x:0,y:1.55,z:-84.2, ry:0}
+        };
+        return map[chamber] || map[1];
+      }
+
+      function currentDebugChamber(){
+        try{
+          if(camera.position.z < -68) return 5;
+          if(camera.position.z < -36) return 4;
+          if(camera.position.z < -21.5) return 3;
+          if(camera.position.z < -7.5) return 2;
+          return 1;
+        }catch(e){
+          return 1;
+        }
+      }
+
+      function jumpToDebugChamber(chamber){
+        try{ closePuzzle(); }catch(e){}
+        applyDebugStateForChamber(chamber);
+
+        const p = debugPosition(chamber);
+        camera.position.set(p.x,p.y,p.z);
+        camera.rotation.set(0,p.ry,0);
+
+        const cover = document.getElementById("coverPage");
+        if(cover) cover.style.display = "none";
+
+        try{ applyProgressVisuals(); }catch(e){}
+        try{ syncDoorBlockers(); }catch(e){}
+        try{ updateJewelCollection(); }catch(e){}
+        try{ updateTorchHud(); }catch(e){}
+        try{ updateTorchGalleryProgression(); }catch(e){}
+        try{ updateAlgorithmButtonVisibility(); }catch(e){}
+        try{ saveProgress(); }catch(e){}
+
+        if(panel) panel.style.display = "none";
+        showMessage(`Debug jump: Chamber ${chamber} loaded.`);
+      }
+
+      if(debugOpenBtn){
+        debugOpenBtn.style.display = "block";
+        debugOpenBtn.addEventListener("click",(e)=>{
+          e.preventDefault();
+          e.stopPropagation();
+          showDebugPassword();
+        });
+      }
+
+      if(pwCancel){
+        pwCancel.addEventListener("click",(e)=>{
+          e.preventDefault();
+          hideDebugPassword();
+        });
+      }
+
+      function tryUnlockDebug(){
+        const value = pwInput ? String(pwInput.value || "").trim() : "";
+        if(value === DEBUG_PASSWORD){
+          showDebugPanel();
+        }else{
+          if(pwError) pwError.style.display = "block";
+          if(pwInput) pwInput.select();
+        }
+      }
+
+      if(pwUnlock){
+        pwUnlock.addEventListener("click",(e)=>{
+          e.preventDefault();
+          tryUnlockDebug();
+        });
+      }
+
+      if(pwInput){
+        pwInput.addEventListener("keydown",(e)=>{
+          if(e.key === "Enter"){
+            e.preventDefault();
+            tryUnlockDebug();
+          }
+          if(e.key === "Escape"){
+            e.preventDefault();
+            hideDebugPassword();
+          }
+        });
+      }
+
+      if(pwOverlay){
+        pwOverlay.addEventListener("click",(e)=>{
+          if(e.target === pwOverlay) hideDebugPassword();
+        });
+      }
+
+      document.querySelectorAll("[data-debug-jump]").forEach(btn=>{
+        btn.addEventListener("click",(e)=>{
+          e.preventDefault();
+          jumpToDebugChamber(Number(btn.dataset.debugJump));
+        });
+      });
+
+      const unlockPrev = document.getElementById("debugUnlockPrevious");
+      if(unlockPrev){
+        unlockPrev.addEventListener("click",(e)=>{
+          e.preventDefault();
+          jumpToDebugChamber(Math.max(1,currentDebugChamber()));
+        });
+      }
+
+      const closePanel = document.getElementById("debugClosePanel");
+      if(closePanel){
+        closePanel.addEventListener("click",(e)=>{
+          e.preventDefault();
+          if(panel) panel.style.display = "none";
+        });
+      }
+
+      const clearProgress = document.getElementById("debugClearProgress");
+      if(clearProgress){
+        clearProgress.addEventListener("click",(e)=>{
+          e.preventDefault();
+          if(confirm("Clear saved progress and restart from Chamber 1?")){
+            try{ clearSavedProgress(); }catch(err){}
+            try{ localStorage.removeItem(SAVE_KEY); }catch(err){}
+            location.reload();
+          }
+        });
+      }
+
+      window.addEventListener("keydown",(e)=>{
+        if(e.ctrlKey && e.shiftKey && e.key.toLowerCase()==="d"){
+          e.preventDefault();
+          showDebugPassword();
+        }
+      });
+    })();
 
     animate();
   })();
