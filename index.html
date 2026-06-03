@@ -739,6 +739,17 @@
       text-shadow:0 3px 0 #4b2b0a;
     }
     #endingCard .rubyBig{font-size:78px;filter:drop-shadow(0 0 18px rgba(255,60,110,.72))}
+    .endingPhoto{
+      width:min(520px,96%);
+      max-height:42vh;
+      object-fit:contain;
+      border-radius:20px;
+      border:3px solid rgba(255,216,107,.74);
+      box-shadow:0 14px 34px rgba(0,0,0,.45),0 0 28px rgba(255,216,107,.22);
+      background:#fff3c4;
+      margin:0 auto 14px;
+      display:block;
+    }
 
     #credit{
       position:fixed;
@@ -2434,6 +2445,9 @@ body.quizPageOpen #messageBox{
       .cleanHelpPanel{font-size:12px !important;padding:9px !important;}
     }
 
+
+    @media(max-width:760px){.endingPhoto{max-height:32vh;border-radius:16px;margin-bottom:10px}}
+
 </style>
 </head>
 
@@ -2601,6 +2615,7 @@ body.quizPageOpen #messageBox{
 
   <div id="endingPanel">
     <div id="endingCard">
+      <img class="endingPhoto" src="https://raw.githubusercontent.com/limkimsze-maker/P3-Uncle-Joe-and-the-Key-of-Product/1933c449dda189ba5d19ab5d14c45dd8eb9a35ba/escape%20complete.png" alt="Happy Uncle Joe and villagers outside in the bright forest">
       <div class="rubyBig">♦️ 🔶 💚 🗝️</div>
       <h1>The Escape Is Complete!</h1>
       <p>You collected the <b>Ruby of Product</b>, <b>Topaz of Tens</b>, <b>Emerald of Hundreds</b>, the <b>Wondrous Magic Wand of Regrouping</b>, and the <b>Key of Product</b>.</p>
@@ -3086,9 +3101,9 @@ const wrap = document.getElementById("gameWrap");
     });
 
     function addAmbient(){
-      const hemi = new THREE.HemisphereLight(0xffd29a, 0x050201, 0.28);
+      const hemi = new THREE.HemisphereLight(0xffe2a3, 0x120603, 0.42);
       scene.add(hemi);
-      const moon = new THREE.DirectionalLight(0xffc68a, LOW_POWER ? 0.16 : 0.22);
+      const moon = new THREE.DirectionalLight(0xffddaa, LOW_POWER ? 0.25 : 0.34);
       moon.position.set(-5, 12, 8);
       moon.castShadow = !LOW_POWER;
       if(moon.castShadow){
@@ -4432,6 +4447,7 @@ function addTablet(){
       group.add(signLight);
 
       scene.add(group);
+      window.tabletObstacle = addSolidObstacle(group,0,0,3.0,1.05,true);
       interactables.push({id:"tablet",group,position:new THREE.Vector3(0,tabletY,0),radius:3.0,label:"Inspect tablet / Start quiz"});
       interactables.push({id:"tabletSign",group,position:new THREE.Vector3(0,signY,0),radius:3.0,label:"Inspect tablet / Start quiz"});
       interactables.push({id:"tabletGem",group,position:new THREE.Vector3(0,gemY,0),radius:2.8,label:"Inspect tablet / Start quiz"});
@@ -4606,17 +4622,39 @@ function addTablet(){
       return sign;
     }
 
+
+    function addBrightChamberLight(x,z,intensity=1.35,distance=15){
+      const light = new THREE.PointLight(0xffd98a, LOW_POWER ? intensity * .65 : intensity, distance, 1.75);
+      light.position.set(x,3.0,z);
+      light.castShadow = false;
+      scene.add(light);
+
+      const glow = new THREE.Mesh(
+        new THREE.SphereGeometry(.12,10,8),
+        new THREE.MeshBasicMaterial({color:0xffe2a3,transparent:true,opacity:.55})
+      );
+      glow.position.set(x,2.9,z);
+      scene.add(glow);
+      return light;
+    }
+
     function buildWorld(){
       addAmbient();
-      addFloor(0,0,15,15,matStartDarkFloor);
+      // Bright chambers; Torch Corridor remains deliberately dark.
+      addBrightChamberLight(0,0,1.45,15);
+      addBrightChamberLight(0,-28.5,1.55,16);
+      addBrightChamberLight(0,-49,1.45,18);
+      addBrightChamberLight(0,-64.5,1.25,13);
+      addBrightChamberLight(0,-78.5,1.55,17);
+      addFloor(0,0,15,15);
       addFloor(0,-13.5,6,13,matTorchDarkFloor);
       addFloor(0,-28.5,15,15);
 
-      addWall(0,7.5,15,.55,3.4,matStartDarkWall);
-      addWall(-7.5,0,.55,15,3.4,matStartDarkWall);
-      addWall(7.5,0,.55,15,3.4,matStartDarkWall);
-      addWall(-5.25,-7.5,4.5,.55,3.4,matStartDarkWall);
-      addWall(5.25,-7.5,4.5,.55,3.4,matStartDarkWall);
+      addWall(0,7.5,15,.55);
+      addWall(-7.5,0,.55,15);
+      addWall(7.5,0,.55,15);
+      addWall(-5.25,-7.5,4.5,.55);
+      addWall(5.25,-7.5,4.5,.55);
       addWall(-3.25,-13.5,.55,13,3.4,matTorchDarkWall);
       addWall(3.25,-13.5,.55,13,3.4,matTorchDarkWall);
       window.firstDoor = addWall(0,-7.72,15.0,.72,3.8,matDoor,true);
