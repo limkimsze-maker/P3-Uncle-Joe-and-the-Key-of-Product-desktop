@@ -3075,6 +3075,7 @@ body.quizPageOpen #messageBox{
           <li>In C3, walk near the numbered scarab pad and press the prompt.</li>
           <li>In C5, walk near the next villager and press the prompt.</li>
           <li>Solve the multiplication algorithm. The object completes automatically.</li>
+          <li>After freeing the villagers, the <b>Amethyst of Thousands</b> door opens to Chamber 6.</li>
           <li>Light all 6 Sun Seals in Chamber 6.</li>
           <li>Collect all treasures and the <b>Key of Product</b>.</li>
           <li>Look out for framed multiplication jokes on the chamber walls.</li>
@@ -3583,7 +3584,18 @@ const wrap = document.getElementById("gameWrap");
       if(window.topazObj) window.topazObj.group.visible = !!(topazVisible && !topazCollected);
       if(window.emeraldObj) window.emeraldObj.group.visible = !!(emeraldVisible && !emeraldCollected);
       if(window.sapphireObj) window.sapphireObj.group.visible = !!(sapphireVisible && !sapphireCollected);
-      if(window.restorationKeyObj) window.restorationKeyObj.group.visible = !!(restorationKeyVisible && !restorationKeyCollected);
+      if(sunSealChallengeDone.size >= 6 && !restorationKeyCollected){
+        restorationKeyVisible = true;
+      }
+      if(window.restorationKeyObj){
+        window.restorationKeyObj.group.visible = !!(restorationKeyVisible && !restorationKeyCollected);
+        if(restorationKeyVisible && !restorationKeyCollected){
+          window.restorationKeyObj.group.position.set(0,1.55,-103.8);
+          window.restorationKeyObj.group.scale.set(1.75,1.75,1.75);
+          window.restorationKeyObj.position.set(0,1.55,-103.8);
+          window.restorationKeyObj.radius = 10.0;
+        }
+      }
 
       torchLitCount = torchChallengeDone.size;
       torchButtons.forEach((obj)=>{
@@ -4663,11 +4675,12 @@ const wrap = document.getElementById("gameWrap");
       restorationKeyVisible = true;
       if(window.restorationKeyObj){
         window.restorationKeyObj.group.visible = true;
-        window.restorationKeyObj.group.position.set(0,1.35,-104.6);
-        window.restorationKeyObj.position.set(0,1.35,-104.6);
-        window.restorationKeyObj.radius = 8.0;
+        window.restorationKeyObj.group.scale.set(1.75,1.75,1.75);
+        window.restorationKeyObj.group.position.set(0,1.55,-103.8);
+        window.restorationKeyObj.position.set(0,1.55,-103.8);
+        window.restorationKeyObj.radius = 10.0;
       }
-      showMessage("All 6 Sun Seals are lit! Walk near the glowing Key of Product and tap the prompt to collect it.");
+      showMessage("All 6 Sun Seals are lit! The Key of Product has appeared. Walk near it and tap the prompt.");
       playVictory();
       burstConfetti(true);
       saveProgress();
@@ -4676,55 +4689,127 @@ const wrap = document.getElementById("gameWrap");
 
     function addRestorationKey(){
       const group = new THREE.Group();
-      group.position.set(0,1.35,-106.0);
+      group.position.set(0,1.55,-103.8);
+      group.scale.set(1.75,1.75,1.75);
       group.visible = false;
 
+      const goldMat = new THREE.MeshStandardMaterial({
+        color:0xffd166,
+        roughness:.18,
+        metalness:.78,
+        emissive:0xfacc15,
+        emissiveIntensity:1.45
+      });
+
+      const brightGoldMat = new THREE.MeshStandardMaterial({
+        color:0xfff3b0,
+        roughness:.12,
+        metalness:.82,
+        emissive:0xffd166,
+        emissiveIntensity:1.85
+      });
+
       const pedestal = new THREE.Mesh(
-        new THREE.CylinderGeometry(.82,.98,.36,32),
-        new THREE.MeshStandardMaterial({color:0x6b3f11,roughness:.52,metalness:.18,emissive:0x2a1305,emissiveIntensity:.25})
+        new THREE.CylinderGeometry(.82,1.04,.34,36),
+        new THREE.MeshStandardMaterial({color:0x6b3f11,roughness:.52,metalness:.18,emissive:0x2a1305,emissiveIntensity:.28})
       );
-      pedestal.position.y = -.92;
+      pedestal.position.y = -.88;
       group.add(pedestal);
 
-      const ring = new THREE.Mesh(
-        new THREE.TorusGeometry(.34,.07,18,72),
-        new THREE.MeshStandardMaterial({color:0xffd166,roughness:.18,metalness:.72,emissive:0xfacc15,emissiveIntensity:1.55})
-      );
-      ring.position.set(-.46,.12,0);
+      // Large key ring
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(.42,.085,22,92), brightGoldMat);
+      ring.position.set(-.48,.22,0);
       ring.rotation.y = Math.PI/2;
       group.add(ring);
 
-      const shaft = new THREE.Mesh(
-        new THREE.BoxGeometry(.95,.14,.14),
-        new THREE.MeshStandardMaterial({color:0xffd166,roughness:.18,metalness:.72,emissive:0xfacc15,emissiveIntensity:1.35})
-      );
-      shaft.position.set(.14,.12,0);
+      // Key shaft
+      const shaft = new THREE.Mesh(new THREE.BoxGeometry(1.08,.16,.16), goldMat);
+      shaft.position.set(.15,.22,0);
       group.add(shaft);
 
-      const tooth1 = new THREE.Mesh(
-        new THREE.BoxGeometry(.16,.36,.14),
-        new THREE.MeshStandardMaterial({color:0xffd166,roughness:.18,metalness:.72,emissive:0xfacc15,emissiveIntensity:1.35})
-      );
-      tooth1.position.set(.56,-.05,0);
-      const tooth2 = tooth1.clone();
-      tooth2.position.set(.34,-.02,0);
-      tooth2.scale.y = .72;
+      // Key teeth
+      const tooth1 = new THREE.Mesh(new THREE.BoxGeometry(.18,.42,.16), goldMat);
+      tooth1.position.set(.62,.02,0);
+      const tooth2 = new THREE.Mesh(new THREE.BoxGeometry(.18,.30,.16), goldMat);
+      tooth2.position.set(.40,.06,0);
       group.add(tooth1,tooth2);
 
+      // Big multiply sign on the key
+      const signCanvas = document.createElement("canvas");
+      signCanvas.width = 256; signCanvas.height = 256;
+      const sctx = signCanvas.getContext("2d");
+      sctx.clearRect(0,0,256,256);
+      sctx.fillStyle = "#fff3b0";
+      sctx.beginPath();
+      sctx.arc(128,128,102,0,Math.PI*2);
+      sctx.fill();
+      sctx.strokeStyle = "#b45309";
+      sctx.lineWidth = 16;
+      sctx.stroke();
+      sctx.fillStyle = "#7c2d12";
+      sctx.font = "bold 150px Arial, sans-serif";
+      sctx.textAlign = "center";
+      sctx.textBaseline = "middle";
+      sctx.fillText("×",128,136);
+      const signTex = new THREE.CanvasTexture(signCanvas);
+      if(THREE.sRGBEncoding) signTex.encoding = THREE.sRGBEncoding;
+      const sign = new THREE.Mesh(
+        new THREE.PlaneGeometry(.62,.62),
+        new THREE.MeshBasicMaterial({map:signTex,transparent:true,side:THREE.DoubleSide})
+      );
+      sign.position.set(-.48,.22,.09);
+      group.add(sign);
+
       const halo = new THREE.Mesh(
-        new THREE.TorusGeometry(.96,.04,16,72),
-        new THREE.MeshStandardMaterial({color:0xfef3c7,emissive:0xfacc15,emissiveIntensity:1.1,transparent:true,opacity:.95})
+        new THREE.TorusGeometry(1.12,.045,16,92),
+        new THREE.MeshStandardMaterial({color:0xfef3c7,emissive:0xfacc15,emissiveIntensity:1.35,transparent:true,opacity:.95})
       );
       halo.rotation.x = Math.PI/2;
-      halo.position.y = -.06;
+      halo.position.y = -.04;
       group.add(halo);
 
-      const light = new THREE.PointLight(0xffd86b,3.2,10,1.35);
-      light.position.set(0,.5,.3);
+      const glowBall = new THREE.Mesh(
+        new THREE.SphereGeometry(.24,18,12),
+        new THREE.MeshBasicMaterial({color:0xfff3b0,transparent:true,opacity:.78})
+      );
+      glowBall.position.set(0,.36,0);
+      group.add(glowBall);
+
+      const labelCanvas = document.createElement("canvas");
+      labelCanvas.width = 720; labelCanvas.height = 220;
+      const lctx = labelCanvas.getContext("2d");
+      lctx.fillStyle = "#1b0c02";
+      lctx.fillRect(0,0,720,220);
+      lctx.strokeStyle = "#ffd86b";
+      lctx.lineWidth = 14;
+      lctx.strokeRect(18,18,684,184);
+      lctx.textAlign = "center";
+      lctx.fillStyle = "#ffe9a0";
+      lctx.font = "bold 54px Georgia, serif";
+      lctx.fillText("KEY OF PRODUCT",360,92);
+      lctx.font = "bold 30px Georgia, serif";
+      lctx.fillText("Tap prompt to collect",360,154);
+      const labelTex = new THREE.CanvasTexture(labelCanvas);
+      if(THREE.sRGBEncoding) labelTex.encoding = THREE.sRGBEncoding;
+      const label = new THREE.Mesh(
+        new THREE.PlaneGeometry(2.9,.88),
+        new THREE.MeshBasicMaterial({map:labelTex,transparent:true,side:THREE.DoubleSide})
+      );
+      label.position.set(0,1.05,.05);
+      group.add(label);
+
+      const light = new THREE.PointLight(0xffd86b,4.2,14,1.25);
+      light.position.set(0,.55,.3);
       group.add(light);
 
       scene.add(group);
-      const obj = {id:"restorationKey",group,position:new THREE.Vector3(0,1.35,-104.6),radius:8.0,label:"Collect Key of Product"};
+      const obj = {
+        id:"restorationKey",
+        group,
+        position:new THREE.Vector3(0,1.55,-103.8),
+        radius:10.0,
+        label:"Collect Key of Product"
+      };
       interactables.push(obj);
       animated.push({type:"restorationKey",group,ring,shaft,halo,light,t:0});
       return obj;
@@ -5781,7 +5866,7 @@ function addTablet(){
       addHieroglyphPanel(0,-35.68,0,"EMERALD\nAWAITS");
       addHieroglyphPanel(0,-59.35,0,"MAGIC WAND\nAHEAD");
       addHieroglyphPanel(0,-67.85,0,"SPELLBOUND\nVILLAGERS");
-      addHieroglyphPanel(0,-87.85,0,"SUN SEALS\nAHEAD");
+      addHieroglyphPanel(0,-87.85,0,"AMETHYST\nOF THOUSANDS");
 
       addTablet();
       window.rubyObj = addRuby();
@@ -6420,7 +6505,7 @@ function openPuzzle(){
         onComplete: ()=>{
           sunSealVisible = true;
           applyProgressVisuals();
-          showMessage("The Sun Seal Chamber is open. Walk ahead and light all 6 Sun Seals.");
+          showMessage("The Amethyst of Thousands door is open. The villagers rush forward. Walk ahead and light all 6 Sun Seals.");
           playVictory();
           saveProgress();
         }
@@ -6669,12 +6754,16 @@ function openPuzzle(){
           const obj = a.obj;
           let facingX = camera.position.x;
           let facingZ = camera.position.z;
-          if(finalEscapeStarted && obj.freed){
-            const escapeXs = [-1.8,-0.8,0.2,1.2,-2.4,2.0];
+          if(obj.freed && (finalEscapeStarted || window.sixthDoorOpen)){
+            const escapeXs = [-2.2,-1.25,-0.35,0.55,1.45,2.35];
             const tx = escapeXs[obj.idx] != null ? escapeXs[obj.idx] : 0;
-            const tz = -87.15 - obj.idx * 0.06;
-            obj.group.position.x += (tx - obj.group.position.x) * Math.min(1, dt * 1.5);
-            obj.group.position.z += (tz - obj.group.position.z) * Math.min(1, dt * 1.15);
+            // When Chamber 6 opens, villagers rush to the Amethyst of Thousands door.
+            // During the final escape, they continue gathering near the final exit.
+            const targetDoorZ = finalEscapeStarted ? -106.75 : -86.95;
+            const tz = targetDoorZ - obj.idx * 0.08;
+            const speed = finalEscapeStarted ? 1.35 : 2.35;
+            obj.group.position.x += (tx - obj.group.position.x) * Math.min(1, dt * speed);
+            obj.group.position.z += (tz - obj.group.position.z) * Math.min(1, dt * speed);
             obj.group.rotation.y = Math.atan2((tx - obj.group.position.x), (tz - obj.group.position.z));
             facingX = tx;
             facingZ = tz - 4;
