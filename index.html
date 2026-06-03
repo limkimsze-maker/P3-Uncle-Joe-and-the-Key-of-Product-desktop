@@ -3329,6 +3329,7 @@ const wrap = document.getElementById("gameWrap");
     let soundOn = true;
     let audioCtx = null;
     let doorOpen = false;
+    let rubySystemPretendCollected = false;
     let rubyVisible = false;
     let rubyCollected = false;
     let topazVisible = false;
@@ -3841,7 +3842,7 @@ const wrap = document.getElementById("gameWrap");
       const data = loadProgressData();
       if(!data) return false;
       doorOpen = !!data.doorOpen;
-      rubyVisible = !!data.rubyVisible; rubyCollected = !!data.rubyCollected; rubySystemPretendCollected = !!data.rubySystemPretendCollected;
+      rubyVisible = !!data.rubyVisible; rubyCollected = !!data.rubyCollected; rubySystemPretendCollected = !!data.rubySystemPretendCollected; rubySystemPretendCollected = !!data.rubySystemPretendCollected;
       window.secondDoorOpen = !!data.secondDoorOpen;
       topazVisible = !!data.topazVisible; topazCollected = !!data.topazCollected;
       window.thirdDoorOpen = !!data.thirdDoorOpen;
@@ -6735,10 +6736,6 @@ function openPuzzle(){
       setTimeout(updateShineButtonVisibility, 60);
     }
     document.getElementById("btnClosePuzzle").addEventListener("click", closePuzzle);
-
-    
-
-
     function pretendRubyCollectedForVisuals(){
       // Visual-only fix: the scene becomes stable after Ruby is collected.
       // We apply that stable state early, but keep the actual Ruby collectable.
