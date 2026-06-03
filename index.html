@@ -3382,7 +3382,7 @@ const wrap = document.getElementById("gameWrap");
     function progressSnapshot(){
       return {
         doorOpen,
-        rubyVisible, rubyCollected,
+        rubyVisible, rubyCollected, rubySystemPretendCollected,
         secondDoorOpen: !!window.secondDoorOpen,
         topazVisible, topazCollected,
         thirdDoorOpen: !!window.thirdDoorOpen,
@@ -3691,7 +3691,7 @@ const wrap = document.getElementById("gameWrap");
       // Villagers arrow sign removed.
       syncDoorBlockers();
 
-      if(window.rubyObj) window.rubyObj.group.visible = !!(rubyVisible && !rubyCollected);
+      if(window.rubyObj) window.rubyObj.group.visible = !!(rubyVisible && (!rubyCollected || rubySystemPretendCollected));
       if(window.topazObj) window.topazObj.group.visible = !!(topazVisible && !topazCollected);
       if(window.emeraldObj) window.emeraldObj.group.visible = !!(emeraldVisible && !emeraldCollected);
       if(window.sapphireObj) window.sapphireObj.group.visible = !!(sapphireVisible && !sapphireCollected);
@@ -3841,7 +3841,7 @@ const wrap = document.getElementById("gameWrap");
       const data = loadProgressData();
       if(!data) return false;
       doorOpen = !!data.doorOpen;
-      rubyVisible = !!data.rubyVisible; rubyCollected = !!data.rubyCollected;
+      rubyVisible = !!data.rubyVisible; rubyCollected = !!data.rubyCollected; rubySystemPretendCollected = !!data.rubySystemPretendCollected;
       window.secondDoorOpen = !!data.secondDoorOpen;
       topazVisible = !!data.topazVisible; topazCollected = !!data.topazCollected;
       window.thirdDoorOpen = !!data.thirdDoorOpen;
@@ -5372,6 +5372,10 @@ function showLightBeam(){
 
     function openScarabQuestion(idx){
       if(idx == null || scarabChallengeDone.has(idx)) return;
+      if(!canAccessScarabQuestions()){
+        showMessage("Complete the Torch Corridor first, open the door, and collect the Topaz of Tens before solving scarabs.");
+        return;
+      }
       activeQuizMode = "scarab";
       activeScarabIndex = idx;
       quiz.stageIndex = 0;
@@ -5788,7 +5792,7 @@ function addTablet(){
       group.add(rubyLabel);
 
       scene.add(group);
-      const obj = {id:"ruby",group,position:new THREE.Vector3(0,1.05,-10.2),radius:4.8,label:"Collect Ruby of Product"};
+      const obj = {id:"ruby",group,position:new THREE.Vector3(0,1.05,-10.2),radius:5.2,label:"Collect Ruby of Product"};
       interactables.push(obj);
       animated.push({type:"ruby",group,ruby,halo,light,t:0});
       return obj;
@@ -6006,6 +6010,56 @@ function addTablet(){
     }
 
 
+
+    function attachOpaqueC2ToC3Seal(){
+      if(!window.secretDoor || !window.secretDoor.mesh || window.c2C3OpaqueSeal) return;
+      const mat = new THREE.MeshBasicMaterial({
+        color:0x5b3514,
+        side:THREE.DoubleSide,
+        transparent:false,
+        depthWrite:true,
+        depthTest:true
+      });
+
+      const seal = new THREE.Mesh(new THREE.BoxGeometry(15.15,3.55,.09), mat);
+      // Child of the actual door slab, so it raises together with the secret door.
+      seal.position.set(0,0,.42);
+      seal.renderOrder = 41;
+      window.secretDoor.mesh.add(seal);
+      window.c2C3OpaqueSeal = seal;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = 900;
+      canvas.height = 260;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#2a1305";
+      ctx.fillRect(0,0,900,260);
+      ctx.strokeStyle = "#ffd86b";
+      ctx.lineWidth = 16;
+      ctx.strokeRect(22,22,856,216);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#fff0a8";
+      ctx.font = "bold 56px Georgia,serif";
+      ctx.fillText("SCARAB CHAMBER",450,94);
+      ctx.font = "bold 33px Georgia,serif";
+      ctx.fillText("Complete 6 torches and collect Topaz",450,166);
+      ctx.font = "bold 26px Georgia,serif";
+      ctx.fillText("before entering",450,214);
+      const tex = new THREE.CanvasTexture(canvas);
+      if(THREE.sRGBEncoding) tex.encoding = THREE.sRGBEncoding;
+
+      const sign = new THREE.Mesh(
+        new THREE.PlaneGeometry(4.8,1.38),
+        new THREE.MeshBasicMaterial({map:tex,transparent:false,side:THREE.DoubleSide,depthWrite:true,depthTest:true})
+      );
+      sign.position.set(0,.05,.48);
+      sign.renderOrder = 42;
+      window.secretDoor.mesh.add(sign);
+      window.c2C3OpaqueSealSign = sign;
+    }
+
+
     function buildWorld(){
       addAmbient();
       // Bright chambers; Torch Corridor remains deliberately dark.
@@ -6066,6 +6120,7 @@ function addTablet(){
       window.secondDoorOpen = false;
       window.secretDoor = addWall(0,-21,15.0,.72,3.8,matDoor,true);
       window.secretDoorBlocker = addSolidObstacle(null,0,-21,15.6,1.2,true);
+      attachOpaqueC2ToC3Seal();
       window.c2ToC3DoorLabel = addC2ToC3DoorLabel();
 
       restoreChamber3Visuals();
@@ -6345,7 +6400,18 @@ function addTablet(){
       });
     }
 
+
+    function canAccessScarabQuestions(){
+      return !!(
+        window.secondDoorOpen &&
+        topazCollected &&
+        torchChallengeDone.size >= TORCH_TOTAL &&
+        !emeraldCollected
+      );
+    }
+
     function currentScarabPromptTarget(){
+      if(!canAccessScarabQuestions()) return null;
       const idx = scarabChallengeDone.size;
       const s = scarabs[idx];
       if(!s || !s.alive || emeraldCollected || !camera) return null;
@@ -6396,7 +6462,7 @@ function addTablet(){
       currentTarget = null;
       let nearest = Infinity;
       for(const item of interactables){
-        if(item.id==="ruby" && (!rubyVisible || rubyCollected)) continue;
+        if(item.id==="ruby" && (!rubyVisible || (rubyCollected && !rubySystemPretendCollected))) continue;
         if(item.id==="topaz" && (!topazVisible || topazCollected)) continue;
         if(item.id==="emerald" && (!emeraldVisible || emeraldCollected)) continue;
         if(item.id==="sapphire" && (!sapphireVisible || sapphireCollected)) continue;
@@ -6408,7 +6474,7 @@ function addTablet(){
         if(String(item.id || "").startsWith("scarabBtn")){
           const idx = Number(String(item.id).replace("scarabBtn",""));
           const inOrNearC3 = camera && camera.position.z < -18.5 && camera.position.z > -38.5;
-          if(!inOrNearC3 || emeraldCollected || scarabChallengeDone.has(idx) || idx !== scarabChallengeDone.size) continue;
+          if(!canAccessScarabQuestions() || !inOrNearC3 || emeraldCollected || scarabChallengeDone.has(idx) || idx !== scarabChallengeDone.size) continue;
         }
         if(String(item.id || "").startsWith("sandBtn")){
           const idx = Number(String(item.id).replace("sandBtn",""));
@@ -6481,6 +6547,11 @@ function addTablet(){
       }
       if(String(currentTarget.id || "").startsWith("scarabBtn")){
         const idx = Number(String(currentTarget.id).replace("scarabBtn",""));
+        if(!canAccessScarabQuestions()){
+          showMessage("Complete the Torch Corridor first, open the door, and collect the Topaz of Tens before solving scarabs.");
+          currentTarget = null;
+          return;
+        }
         if(scarabChallengeDone.has(idx)){
           showMessage("This scarab is already lit. Proceed to the next scarab.");
           return;
@@ -6667,7 +6738,32 @@ function openPuzzle(){
 
     
 
+
+    function pretendRubyCollectedForVisuals(){
+      // Visual-only fix: the scene becomes stable after Ruby is collected.
+      // We apply that stable state early, but keep the actual Ruby collectable.
+      if(rubyCollected) return;
+      rubySystemPretendCollected = true;
+
+      // Run the harmless visual/HUD stabilisers that normally happen after collection.
+      updateJewelCollection?.();
+      updateTorchGalleryProgression?.();
+      updateTorchHud?.();
+      syncDoorBlockers?.();
+
+      // Keep the Ruby physically present for the pupil to collect.
+      rubyVisible = true;
+      if(window.rubyObj){
+        window.rubyObj.group.visible = true;
+        window.rubyObj.group.position.set(0,1.05,-10.2);
+        window.rubyObj.position.set(0,1.05,-10.2);
+        window.rubyObj.radius = 5.2;
+      }
+    }
+
+
     function refreshVisualStateBeforeRubyCollection(){
+      // GOOD PRE-RUBY VIEW LOCK: camera should stay before the Ruby, not inside it.
       // The Ruby collection path already proves the visual state becomes normal.
       // This applies the same 3D/canvas stabilisation BEFORE the Ruby is collected,
       // while keeping the Ruby visible and collectable.
@@ -6684,7 +6780,7 @@ function openPuzzle(){
         window.rubyObj.group.visible = true;
         window.rubyObj.group.position.set(0,1.05,-10.2);
         window.rubyObj.position.set(0,1.05,-10.2);
-        window.rubyObj.radius = 4.8;
+        window.rubyObj.radius = 5.2;
       }
       syncDoorBlockers();
       updateTorchGalleryProgression?.();
@@ -6708,7 +6804,7 @@ function openPuzzle(){
       if(!doorOpen || !window.firstDoor || !window.rubyObj) return;
       refreshVisualStateBeforeRubyCollection();
       if(camera.position.z > -8.2 || camera.position.z < -11.6){
-        setPlayerFloorView(0,-9.35,0);
+        setPlayerFloorView(0,-6.9,0);
       }
       showMessage("Starting Chamber cleared! You are back at floor level. Collect the Ruby of Product.");
     }
@@ -6724,13 +6820,13 @@ function openPuzzle(){
         blocker: window.firstDoorBlocker,
         doorZ: -7.72,
         cameraZ: -3.0,
-        restoreAfterOpen: {x:0, z:-9.35, ry:0},
+        restoreAfterOpen: {x:0, z:-6.9, ry:0},
         message: "Watch carefully... the door is opening!",
         onComplete: ()=>{
           rubyVisible = true;
           if(window.rubyObj) window.rubyObj.group.visible = true;
           refreshVisualStateBeforeRubyCollection();
-          setPlayerFloorView(0,-9.35,0);
+          setPlayerFloorView(0,-6.9,0);
           showMessage("Starting Chamber cleared! You are back at floor level. Collect the Ruby of Product.");
           setTimeout(firstDoorPostOpenWatchdog,120);
           setTimeout(firstDoorPostOpenWatchdog,520);
@@ -6926,13 +7022,16 @@ function openPuzzle(){
     }
 
     function collectRuby(){
-      if(rubyCollected) return;
+      // If the system was pretending Ruby had been collected for visual stability,
+      // this tap now turns it into a real collection.
+      if(rubyCollected && !rubySystemPretendCollected) return;
+      rubySystemPretendCollected = false;
       rubyCollected = true;
       updateJewelCollection();
       showMessage("You found the Ruby of Product! Continue along the Torch Corridor.");
       playVictory();
       burstConfetti(true);
-      window.rubyObj.group.visible = false;
+      if(window.rubyObj) window.rubyObj.group.visible = false;
       saveProgress();
     }
 
@@ -6945,6 +7044,7 @@ function openPuzzle(){
       playVictory();
       burstConfetti(true);
       window.topazObj.group.visible = false;
+      applyProgressVisuals();
       saveProgress();
     }
 
