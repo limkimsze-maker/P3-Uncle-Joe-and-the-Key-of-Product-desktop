@@ -2841,7 +2841,7 @@ const wrap = document.getElementById("gameWrap");
         if(obj.previewLight) obj.previewLight.intensity = 0;
         if(obj.previewRing) obj.previewRing.visible = false;
         if(obj.flame) obj.flame.visible = lit;
-        if(obj.light) obj.light.intensity = lit ? (LOW_POWER ? 1.5 : 2.4) : 0;
+        if(obj.light) obj.light.intensity = lit ? (LOW_POWER ? 1.15 : 1.65) : 0;
       });
       updateTorchGalleryProgression();
       updateTorchHud();
@@ -2959,6 +2959,20 @@ const wrap = document.getElementById("gameWrap");
     const matGlow = new THREE.MeshStandardMaterial({ color:0xffd36b, emissive:0xff9d28, emissiveIntensity:1.35, roughness:.45 });
     const matRuby = new THREE.MeshStandardMaterial({ color:0xe91954, emissive:0xff185e, emissiveIntensity:.95, roughness:.28, metalness:.2 });
     const matBlack = new THREE.MeshStandardMaterial({ color:0x140d08, roughness:1 });
+    const matTorchDarkFloor = new THREE.MeshStandardMaterial({
+      color:0x080402,
+      roughness:1,
+      metalness:0,
+      emissive:0x010000,
+      emissiveIntensity:.03
+    });
+    const matTorchDarkWall = new THREE.MeshStandardMaterial({
+      color:0x120704,
+      roughness:1,
+      metalness:0,
+      emissive:0x020000,
+      emissiveIntensity:.035
+    });
 
     function addAmbient(){
       const hemi = new THREE.HemisphereLight(0xffe2a3, 0x190c03, 0.58);
@@ -3034,6 +3048,44 @@ const wrap = document.getElementById("gameWrap");
     }
 
     
+    function addDarkWallTorch(x,z,side="wall"){
+      const group = new THREE.Group();
+      group.position.set(x,1.35,z);
+
+      const holder = new THREE.Mesh(
+        new THREE.CylinderGeometry(.055,.075,.62,8),
+        new THREE.MeshStandardMaterial({
+          color:0x1f1208,
+          roughness:.75,
+          metalness:.18,
+          emissive:0x050100,
+          emissiveIntensity:.04
+        })
+      );
+      holder.rotation.x = Math.PI/2;
+      holder.castShadow = !LOW_POWER;
+      group.add(holder);
+
+      // Tiny ember only, no useful light. The numbered puzzle torch gives the real glow.
+      const ember = new THREE.Mesh(
+        new THREE.SphereGeometry(.08,10,8),
+        new THREE.MeshStandardMaterial({
+          color:0x4a1b05,
+          emissive:0x2a0800,
+          emissiveIntensity:.18,
+          roughness:.8
+        })
+      );
+      ember.position.y = .24;
+      group.add(ember);
+
+      if(side==="left") group.rotation.y = Math.PI/2;
+      if(side==="right") group.rotation.y = -Math.PI/2;
+      if(side==="back") group.rotation.y = Math.PI;
+      scene.add(group);
+      return group;
+    }
+
     function addTorchButton(idx,x,z,side="left"){
       const group = new THREE.Group();
       group.position.set(x,.24,z);
@@ -3113,8 +3165,8 @@ const wrap = document.getElementById("gameWrap");
         obj.group.visible = shouldShow;
 
         if(obj.previewLight){
-          obj.previewLight.intensity = active ? (LOW_POWER ? 0.8 : 1.15) : 0;
-          obj.previewLight.distance = active ? (LOW_POWER ? 4.6 : 6.0) : 0;
+          obj.previewLight.intensity = active ? (LOW_POWER ? 0.58 : 0.82) : 0;
+          obj.previewLight.distance = active ? (LOW_POWER ? 3.8 : 4.8) : 0;
         }
         if(obj.previewRing) obj.previewRing.visible = active;
 
@@ -3140,7 +3192,7 @@ const wrap = document.getElementById("gameWrap");
       obj.flame.material.color.setHex(0xffb129);
       obj.flame.material.emissive.setHex(0xff7a00);
       obj.flame.material.emissiveIntensity = 1.9;
-      obj.light.intensity = LOW_POWER ? 1.5 : 2.1;
+      obj.light.intensity = LOW_POWER ? 1.15 : 1.65;
       animated.push({type:"torch",flame:obj.flame,light:obj.light,base:1.4,t:Math.random()*10});
     }
 
@@ -4418,7 +4470,7 @@ function addTablet(){
     function buildWorld(){
       addAmbient();
       addFloor(0,0,15,15);
-      addFloor(0,-13.5,6,13);
+      addFloor(0,-13.5,6,13,matTorchDarkFloor);
       addFloor(0,-28.5,15,15);
 
       addWall(0,7.5,15,.55);
@@ -4426,8 +4478,8 @@ function addTablet(){
       addWall(7.5,0,.55,15);
       addWall(-5.25,-7.5,4.5,.55);
       addWall(5.25,-7.5,4.5,.55);
-      addWall(-3.25,-13.5,.55,13);
-      addWall(3.25,-13.5,.55,13);
+      addWall(-3.25,-13.5,.55,13,3.4,matTorchDarkWall);
+      addWall(3.25,-13.5,.55,13,3.4,matTorchDarkWall);
       window.firstDoor = addWall(0,-7.72,15.0,.72,3.8,matDoor,true);
       window.firstDoorBlocker = addSolidObstacle(null,0,-7.72,15.6,1.2,true);
 
@@ -4498,7 +4550,7 @@ function addTablet(){
       addPillar(-5.2,-32.2); addPillar(5.2,-32.2);
 
       addTorch(-6.95,1.8,"left"); addTorch(6.95,1.8,"right");
-      addTorch(-2.9,-12,"left"); addTorch(2.9,-16.2,"right");
+      addDarkWallTorch(-2.9,-12,"left"); addDarkWallTorch(2.9,-16.2,"right");
       addTorch(-6.9,-28.8,"left"); addTorch(6.9,-28.8,"right");
 
       // Torch Corridor: six buttons. Each solved question lights one torch.
@@ -5943,7 +5995,7 @@ function openPuzzle(){
       if(torchLitCount >= TORCH_TOTAL){
         openSecondDoor();
       }else{
-        showMessage(`Torch ${torchLitCount} of ${TORCH_TOTAL} is lit. The next torch is now glowing in the darkness.`);
+        showMessage(`Torch ${torchLitCount} of ${TORCH_TOTAL} is lit. A faint glow reveals the next torch in the dark corridor.`);
       }
 
       activeTorchIndex = null;
