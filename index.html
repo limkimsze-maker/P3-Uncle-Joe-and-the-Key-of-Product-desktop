@@ -6666,16 +6666,51 @@ function openPuzzle(){
     document.getElementById("btnClosePuzzle").addEventListener("click", closePuzzle);
 
     
+
+    function refreshVisualStateBeforeRubyCollection(){
+      // The Ruby collection path already proves the visual state becomes normal.
+      // This applies the same 3D/canvas stabilisation BEFORE the Ruby is collected,
+      // while keeping the Ruby visible and collectable.
+      force3DChamberMode();
+      doorOpen = true;
+      rubyVisible = true;
+      if(window.firstDoor){
+        window.firstDoor.active = false;
+        if(window.firstDoor.mesh) window.firstDoor.mesh.position.y = 8.8;
+      }
+      if(window.firstDoorLabel) window.firstDoorLabel.position.y = 8.8;
+      if(window.firstDoorBlocker) window.firstDoorBlocker.active = false;
+      if(window.rubyObj && !rubyCollected){
+        window.rubyObj.group.visible = true;
+        window.rubyObj.group.position.set(0,1.05,-10.2);
+        window.rubyObj.position.set(0,1.05,-10.2);
+        window.rubyObj.radius = 4.8;
+      }
+      syncDoorBlockers();
+      updateTorchGalleryProgression?.();
+      updateTorchHud?.();
+      updateJewelCollection?.();
+
+      // Mark materials/world matrices for a clean redraw without changing their appearance.
+      scene.traverse(obj=>{
+        obj.matrixWorldNeedsUpdate = true;
+        if(obj.material){
+          if(Array.isArray(obj.material)) obj.material.forEach(m=>m.needsUpdate = true);
+          else obj.material.needsUpdate = true;
+        }
+      });
+
+      resize3DRendererSoon();
+    }
+
+
     function firstDoorPostOpenWatchdog(){
       if(!doorOpen || !window.firstDoor || !window.rubyObj) return;
-      force3DChamberMode();
-      if(camera.position.z > -7.2 || camera.position.z < -12.4){
-        setPlayerFloorView(0,-5.4,0);
+      refreshVisualStateBeforeRubyCollection();
+      if(camera.position.z > -8.2 || camera.position.z < -11.6){
+        setPlayerFloorView(0,-9.35,0);
       }
-      rubyVisible = true;
-      if(!rubyCollected) window.rubyObj.group.visible = true;
-      resize3DRendererSoon();
-      showMessage("Starting Chamber cleared! Walk forward into the Torch Corridor and collect the Ruby of Product.");
+      showMessage("Starting Chamber cleared! You are back at floor level. Collect the Ruby of Product.");
     }
 
     function openDoor(){
@@ -6689,14 +6724,17 @@ function openPuzzle(){
         blocker: window.firstDoorBlocker,
         doorZ: -7.72,
         cameraZ: -3.0,
-        restoreAfterOpen: {x:0, z:-5.4, ry:0},
+        restoreAfterOpen: {x:0, z:-9.35, ry:0},
         message: "Watch carefully... the door is opening!",
         onComplete: ()=>{
           rubyVisible = true;
           if(window.rubyObj) window.rubyObj.group.visible = true;
-          showMessage("Starting Chamber cleared! Walk forward into the Torch Corridor and collect the Ruby of Product.");
+          refreshVisualStateBeforeRubyCollection();
+          setPlayerFloorView(0,-9.35,0);
+          showMessage("Starting Chamber cleared! You are back at floor level. Collect the Ruby of Product.");
           setTimeout(firstDoorPostOpenWatchdog,120);
           setTimeout(firstDoorPostOpenWatchdog,520);
+          setTimeout(firstDoorPostOpenWatchdog,1200);
           updateTorchGalleryProgression?.();
           saveProgress();
         }
