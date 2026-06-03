@@ -4663,11 +4663,11 @@ const wrap = document.getElementById("gameWrap");
       restorationKeyVisible = true;
       if(window.restorationKeyObj){
         window.restorationKeyObj.group.visible = true;
-        window.restorationKeyObj.group.position.set(0,1.35,-106.0);
-        window.restorationKeyObj.position.set(0,1.35,-106.0);
-        window.restorationKeyObj.radius = 4.2;
+        window.restorationKeyObj.group.position.set(0,1.35,-104.6);
+        window.restorationKeyObj.position.set(0,1.35,-104.6);
+        window.restorationKeyObj.radius = 8.0;
       }
-      showMessage("All 6 Sun Seals are lit! Collect the Key of Product.");
+      showMessage("All 6 Sun Seals are lit! Walk near the glowing Key of Product and tap the prompt to collect it.");
       playVictory();
       burstConfetti(true);
       saveProgress();
@@ -4724,7 +4724,7 @@ const wrap = document.getElementById("gameWrap");
       group.add(light);
 
       scene.add(group);
-      const obj = {id:"restorationKey",group,position:new THREE.Vector3(0,1.35,-106.0),radius:3.2,label:"Collect Key of Product"};
+      const obj = {id:"restorationKey",group,position:new THREE.Vector3(0,1.35,-104.6),radius:8.0,label:"Collect Key of Product"};
       interactables.push(obj);
       animated.push({type:"restorationKey",group,ring,shaft,halo,light,t:0});
       return obj;
@@ -5975,6 +5975,26 @@ function addTablet(){
       return null;
     }
 
+
+    function currentRestorationKeyTarget(){
+      if(!restorationKeyVisible || restorationKeyCollected || !window.restorationKeyObj || !camera) return null;
+      const key = window.restorationKeyObj;
+      const pos = key.position || new THREE.Vector3(0,1.35,-104.6);
+      const inC6 = camera.position.z < -90.0 && camera.position.z > -108.6;
+      if(!inC6) return null;
+      const dist = Math.hypot(camera.position.x - pos.x, camera.position.z - pos.z);
+      if(dist < 9.5){
+        return {
+          id:"restorationKey",
+          group:key.group,
+          position:pos,
+          radius:9.5,
+          label:"Collect Key of Product"
+        };
+      }
+      return null;
+    }
+
     function updateInteraction(){
       updateScarabPromptVisuals();
       currentTarget = null;
@@ -6013,6 +6033,7 @@ function addTablet(){
         }
       }
       if(!currentTarget) currentTarget = currentScarabPromptTarget();
+      if(!currentTarget) currentTarget = currentRestorationKeyTarget();
 
       if(currentTarget){
         promptText.textContent = currentTarget.label;
@@ -6031,6 +6052,7 @@ function addTablet(){
     promptEl.addEventListener("click", tryInteract);
     function tryInteract(){
       if(!currentTarget) currentTarget = currentScarabPromptTarget();
+      if(!currentTarget) currentTarget = currentRestorationKeyTarget();
       if(!currentTarget) return;
       unlockAudio();
       if(currentTarget.id === "tablet"){
