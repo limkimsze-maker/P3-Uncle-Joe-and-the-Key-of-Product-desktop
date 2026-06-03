@@ -2792,6 +2792,7 @@ const wrap = document.getElementById("gameWrap");
     const aimNdc = new THREE.Vector2(0,0);
     let currentTarget = null;
     let doorCinematicActive = false;
+    let pendingFloorRestoreAfterDoorView = false;
     var TORCH_TOTAL = 6;
 
     const DOOR_OPEN_SOUND_URL = "https://raw.githubusercontent.com/limkimsze-maker/P3-Uncle-Joe-and-the-Key-of-Product/976802ad774b985452e6b06c9945e6378bcd1822/krnbeatz-tectonic-passage-418836.mp3";
@@ -2888,6 +2889,15 @@ const wrap = document.getElementById("gameWrap");
     }
 
 
+    function restoreFloorLevelAfterDoorView(){
+      if(!pendingFloorRestoreAfterDoorView) return;
+      pendingFloorRestoreAfterDoorView = false;
+      camera.position.y = 1.65;
+      camera.rotation.x = 0;
+      showMessage("Back at floor level. Continue the mission.");
+    }
+
+
     function ensureDoorOpeningAudio(){
       if(doorOpeningAudio) return doorOpeningAudio;
       doorOpeningAudio = new Audio(DOOR_OPEN_SOUND_URL);
@@ -2980,6 +2990,8 @@ const wrap = document.getElementById("gameWrap");
           if(blocker) blocker.active = false;
           syncDoorBlockers();
           doorCinematicActive = false;
+          pendingFloorRestoreAfterDoorView = true;
+          showMessage("Door opened. Touch the screen or move to return to floor level.");
           if(typeof onComplete === "function") onComplete();
         }
       }
@@ -4952,6 +4964,9 @@ function addTablet(){
 
     window.addEventListener("keydown",(e)=>{
       const k = e.key.toLowerCase();
+      if(["w","a","s","d"].includes(k) || e.key==="ArrowLeft" || e.key==="ArrowRight" || e.key==="ArrowUp" || e.key==="ArrowDown"){
+        restoreFloorLevelAfterDoorView();
+      }
       if(modalShade.style.display === "flex"){
         if(/^[0-9]$/.test(e.key)){ insertDigit(e.key); e.preventDefault(); return; }
         if(e.key === "Backspace"){ backspaceEntry(); e.preventDefault(); return; }
@@ -5000,6 +5015,7 @@ function addTablet(){
 
     let dragging = false, lastX=0, lastY=0;
     renderer.domElement.addEventListener("pointerdown",(e)=>{
+      restoreFloorLevelAfterDoorView();
       if(modalShade.style.display==="flex") return;
       dragging = true; lastX=e.clientX; lastY=e.clientY;
       renderer.domElement.setPointerCapture?.(e.pointerId);
