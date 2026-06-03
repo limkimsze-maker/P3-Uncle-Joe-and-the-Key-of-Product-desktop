@@ -3274,17 +3274,31 @@ body.quizPageOpen #messageBox{
 })();
 </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 
   <script>
   (() => {
     "use strict";
 
     window.addEventListener("error", function(e){
+      var msg = String((e && e.message) || "");
+
+      // Android WebView / CDN / cross-origin scripts can sometimes report only
+      // "Script error." even when the game itself continues correctly.
+      // Do not show the red game-error banner for this non-specific browser noise.
+      if(
+        msg === "Script error." ||
+        msg === "Script error" ||
+        msg.indexOf("ResizeObserver loop") >= 0 ||
+        msg.indexOf("ResizeObserver loop completed") >= 0
+      ){
+        return true;
+      }
+
       var box = document.getElementById("runtimeErrorBox");
       if(box){
         box.style.display = "block";
-        box.textContent = "Game error: " + (e.message || "Unknown error") + ". Please send this screenshot to check.";
+        box.textContent = "Game error: " + (msg || "Unknown error") + ". Please send this screenshot to check.";
       }
     });
     window.addEventListener("unhandledrejection", function(e){
