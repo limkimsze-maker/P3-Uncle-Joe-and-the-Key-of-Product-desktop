@@ -2250,6 +2250,99 @@ body.quizPageOpen #messageBox{
       #quickHowToPanel{font-size:13px;padding:12px;}
     }
 
+
+    /* ===== MOBILE COVER SCROLL FIX ===== */
+    #coverPage{
+      display:flex;
+      align-items:flex-start !important;
+      justify-content:center !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      -webkit-overflow-scrolling:touch !important;
+      touch-action:pan-y !important;
+      overscroll-behavior:contain !important;
+      height:calc(var(--vh, 1vh) * 100) !important;
+      max-height:calc(var(--vh, 1vh) * 100) !important;
+      padding:12px 10px calc(120px + env(safe-area-inset-bottom,0px)) !important;
+    }
+    #coverPage *{
+      touch-action:pan-y !important;
+    }
+    #coverPage button{
+      touch-action:manipulation !important;
+    }
+    .coverCard{
+      margin:0 auto 40px !important;
+      max-height:none !important;
+      overflow:visible !important;
+      width:min(900px,96vw) !important;
+    }
+    .coverImageWrap{
+      max-height:34vh !important;
+    }
+    .coverImageWrap img{
+      max-height:34vh !important;
+      object-fit:contain !important;
+    }
+    #quickHowToPanel{
+      display:block !important; /* keep reset visible at the start */
+    }
+    @media(max-width:760px){
+      #coverPage{
+        padding:8px 8px calc(135px + env(safe-area-inset-bottom,0px)) !important;
+      }
+      .coverCard{
+        padding:12px !important;
+        border-radius:22px !important;
+      }
+      .coverImageWrap{
+        max-height:30vh !important;
+        margin-bottom:10px !important;
+      }
+      .coverImageWrap img{
+        max-height:30vh !important;
+      }
+      .coverSubtitle{
+        font-size:13px !important;
+        line-height:1.35 !important;
+        margin-bottom:10px !important;
+      }
+      .coverActions{
+        gap:8px !important;
+        margin-top:8px !important;
+      }
+      .coverBtn{
+        min-height:46px !important;
+        padding:11px 14px !important;
+        font-size:15px !important;
+      }
+      #quickHowToPanel{
+        font-size:12.5px !important;
+        padding:10px !important;
+        margin-top:10px !important;
+      }
+      #quickHowToPanel ol{
+        margin-left:18px !important;
+      }
+    }
+
+
+    #prompt{
+      z-index:26 !important;
+      bottom:calc(96px + var(--safeBottom)) !important;
+      left:50% !important;
+      transform:translateX(-50%) !important;
+      max-width:min(92vw,520px) !important;
+      box-shadow:0 0 24px rgba(255,216,107,.55),0 10px 30px rgba(0,0,0,.5) !important;
+    }
+    @media(max-width:760px){
+      #prompt{
+        bottom:calc(104px + var(--safeBottom)) !important;
+        font-size:15px !important;
+        padding:10px 14px !important;
+      }
+    }
+
 </style>
 </head>
 
@@ -2270,6 +2363,7 @@ body.quizPageOpen #messageBox{
       <div class="coverActions">
         <button class="coverBtn" id="coverStartBtn">Start / Continue Mission</button>
         <button class="coverBtn secondary" id="coverHowToToggle" type="button">How to Play / Reset Progress</button>
+        <button class="coverBtn secondary" id="coverResetBtnTop" type="button">Hold 2s: Reset Progress</button>
       </div>
 
       <div id="quickHowToPanel">
@@ -2588,25 +2682,24 @@ const wrap = document.getElementById("gameWrap");
 
     function clearSavedProgress(){
       try{
-        localStorage.removeItem(SAVE_KEY);
-        // Clear older/related local progress keys for this project too.
         const kill = [];
         for(let i=0;i<localStorage.length;i++){
           const k = localStorage.key(i);
           if(!k) continue;
           if(
+            k === SAVE_KEY ||
             k.includes("p3_multiply_egyptian_maze") ||
             k.includes("P3-Multiply-Egyptian-Maze") ||
-            k.includes("Uncle_Joe") ||
-            k.includes("uncle_joe") ||
-            k.includes("Key_of_Product")
+            k.includes("Uncle") ||
+            k.includes("uncle") ||
+            k.includes("Product") ||
+            k.includes("egypt")
           ) kill.push(k);
         }
         kill.forEach(k=>localStorage.removeItem(k));
+        localStorage.removeItem(SAVE_KEY);
       }catch(e){}
-      try{
-        sessionStorage.clear();
-      }catch(e){}
+      try{ sessionStorage.clear(); }catch(e){}
     }
 
     function loadProgressData(){
@@ -3635,7 +3728,7 @@ const wrap = document.getElementById("gameWrap");
         id:"scarabBtn" + idx,
         group,
         position:new THREE.Vector3(x,.55,z),
-        radius:8.5,
+        radius:10.5,
         label:`Solve Scarab ${idx+1} question`
       });
 
@@ -4385,14 +4478,20 @@ function addTablet(){
       const idx = scarabChallengeDone.size;
       const s = scarabs[idx];
       if(!s || !s.alive || emeraldCollected || !camera) return null;
-      const nearC3 = camera.position.z < -20.0 && camera.position.z > -37.5;
+
+      // Reliable C3 detection. Wider than the visual room to avoid missing the prompt.
+      const inOrNearC3 = camera.position.z < -18.5 && camera.position.z > -38.5;
+      if(!inOrNearC3) return null;
+
       const dist = Math.hypot(camera.position.x - s.group.position.x, camera.position.z - s.group.position.z);
-      if(nearC3 && dist < 8.5){
+
+      // Same intention as C2/C4: near the numbered object. Wider for mobile frustration-free play.
+      if(dist < 10.5){
         return {
           id:"scarabBtn" + idx,
           group:s.group,
           position:new THREE.Vector3(s.group.position.x,.55,s.group.position.z),
-          radius:8.5,
+          radius:10.5,
           label:`Solve Scarab ${idx+1} question`
         };
       }
@@ -4415,8 +4514,8 @@ function addTablet(){
         }
         if(String(item.id || "").startsWith("scarabBtn")){
           const idx = Number(String(item.id).replace("scarabBtn",""));
-          const nearC3 = camera && camera.position.z < -20.0 && camera.position.z > -37.5;
-          if(!nearC3 || emeraldCollected || scarabChallengeDone.has(idx) || idx !== scarabChallengeDone.size) continue;
+          const inOrNearC3 = camera && camera.position.z < -18.5 && camera.position.z > -38.5;
+          if(!inOrNearC3 || emeraldCollected || scarabChallengeDone.has(idx) || idx !== scarabChallengeDone.size) continue;
         }
         if(String(item.id || "").startsWith("sandBtn")){
           const idx = Number(String(item.id).replace("sandBtn",""));
@@ -4432,7 +4531,9 @@ function addTablet(){
           nearest = dist; currentTarget = item;
         }
       }
-if(currentTarget){
+      if(!currentTarget) currentTarget = currentScarabPromptTarget();
+
+      if(currentTarget){
         promptText.textContent = currentTarget.label;
         promptEl.style.display = "inline-flex";
       }else{
