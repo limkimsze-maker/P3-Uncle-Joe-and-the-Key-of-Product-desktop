@@ -1,4 +1,4 @@
-name: Diagnose Stage Positions
+name: Diagnose Start Handler
 'on':
   push:
     paths:
@@ -10,21 +10,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect stage jump positions
+      - name: Inspect start handler
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
           s=Path("index.html").read_text(encoding="utf-8")
           low=s.lower()
-          terms=["data-debug-jump","debugjump","jumptostage","completeprevious","unlockprevious","camera.position.set(0,1.65","camera.position.set(0, 1.65"]
+          terms=['getelementbyid("coverstartbtn")',"coverstartbtn.onclick","coverstartbtn).addeventlistener","coverstartbtn').addeventlistener","applysavedprogress()","progressloaded ?","if(progressloaded)","outdoor_start","first_chamber_entry"]
           for term in terms:
               print("\n====",term,"====")
               start=0; n=0
               while True:
-                  i=low.find(term,start)
+                  i=low.find(term.lower(),start)
                   if i<0 or n>=20: break
                   print("\n---",i,"---")
-                  print(s[max(0,i-3000):min(len(s),i+6000)])
+                  print(s[max(0,i-2800):min(len(s),i+6500)])
                   start=i+len(term); n+=1
           PY
