@@ -1,16 +1,49 @@
-name: Diagnose Equal Groups
+name: Patch Equal Groups Equation
 'on':
   push:
     paths:
       - .github/workflows/diagnose-unclejoe.yml
 permissions:
-  contents: read
+  contents: write
 jobs:
-  diagnose:
+  patch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect equal groups markup
+      - name: Keep equal-groups equation on one row
         shell: bash
         run: |
-          python -c "from pathlib import Path; s=Path('index.html').read_text(encoding='utf-8'); i=s.find('groups of'); print('INDEX',i); print(s[max(0,i-3500):i+3500])"
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+          css = """
+/* Equal Groups: keep the full equation on one straight line. */
+#equalGroupOverlay .egEquation{
+  display:flex !important;
+  flex-direction:row !important;
+  flex-wrap:nowrap !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:10px !important;
+  white-space:nowrap !important;
+}
+#equalGroupOverlay .egEquation > *{
+  flex:0 0 auto !important;
+}
+"""
+          marker="</style>"
+          if css.strip() not in s:
+              if marker not in s:
+                  raise SystemExit("style marker not found")
+              s=s.replace(marker, css+"\n"+marker, 1)
+          p.write_text(s,encoding="utf-8")
+          PY
+      - name: Commit patch
+        shell: bash
+        run: |
+          git config user.name "limkimsze-maker"
+          git config user.email "lim_kim_sze@moe.edu.sg"
+          git add index.html
+          git commit -m "Keep Equal Groups equation on one line" || exit 0
+          git push
