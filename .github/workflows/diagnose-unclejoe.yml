@@ -1,42 +1,31 @@
-name: Patch Scarab Wording
+name: Verify Progression Items
 'on':
   push:
     paths:
       - .github/workflows/diagnose-unclejoe.yml
 permissions:
-  contents: write
+  contents: read
 jobs:
-  patch:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Update visible scarab wording
+      - name: Inspect progression names from programme
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-          p=Path("index.html")
-          s=p.read_text(encoding="utf-8")
-          replacements = {
-            "All 6 scarabs":"All 5 scarabs",
-            "6 scarabs":"5 scarabs",
-            "six scarabs":"five scarabs",
-            "Six scarabs":"Five scarabs"
-          }
-          changed=False
-          for a,b in replacements.items():
-              if a in s:
-                  s=s.replace(a,b)
-                  changed=True
-          if not changed:
-              print("No literal 6-scarab wording found; leaving file unchanged.")
-          p.write_text(s,encoding="utf-8")
+          s=Path("index.html").read_text(encoding="utf-8")
+          terms=["ruby","topaz","emerald","sapphire","wand","restorationKey","key of product","jewel","gem"]
+          low=s.lower()
+          for term in terms:
+              print("\n====",term,"====")
+              start=0; n=0
+              while True:
+                  i=low.find(term.lower(),start)
+                  if i<0 or n>=20: break
+                  print("\n---",i,"---")
+                  print(s[max(0,i-450):min(len(s),i+950)])
+                  start=i+len(term)
+                  n+=1
           PY
-      - name: Commit patch
-        shell: bash
-        run: |
-          git config user.name "limkimsze-maker"
-          git config user.email "lim_kim_sze@moe.edu.sg"
-          git add index.html
-          git commit -m "Update scarab wording to five" || exit 0
-          git push
