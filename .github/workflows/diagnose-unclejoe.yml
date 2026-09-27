@@ -1,4 +1,4 @@
-name: Diagnose Resume Logic
+name: Diagnose Resume Hook
 'on':
   push:
     paths:
@@ -10,21 +10,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect resume save reset logic
+      - name: Inspect resume hook
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
           s=Path("index.html").read_text(encoding="utf-8")
           low=s.lower()
-          terms=["function saveprogress","function loadprogress","saveprogress(","loadprogress(","localstorage","coverstartbtn","coverresetbtntop","camera.position","rubycollected","topazcollected","emeraldcollected","sapphirecollected","wandcollected","villagerfreedcount","sunsealcount","restorationkeycollected"]
+          terms=["progressloaded","data.camera","saved.camera","loadprogressdata()","applyprogressvisuals()","coverstartbtn.addeventlistener","start / continue","camera.position.set(","cameraposition"]
           for term in terms:
               print("\n====",term,"====")
               start=0; n=0
               while True:
                   i=low.find(term,start)
-                  if i<0 or n>=12: break
+                  if i<0 or n>=14: break
                   print("\n---",i,"---")
-                  print(s[max(0,i-1600):min(len(s),i+3200)])
+                  print(s[max(0,i-2200):min(len(s),i+4600)])
                   start=i+len(term); n+=1
           PY
