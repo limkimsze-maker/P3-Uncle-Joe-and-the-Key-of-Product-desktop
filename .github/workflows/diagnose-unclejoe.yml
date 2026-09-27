@@ -1,40 +1,32 @@
-name: Diagnose Uncle Joe HTML
+name: Patch Uncle Joe Background Sound
 on:
   push:
     paths:
       - '.github/workflows/diagnose-unclejoe.yml'
 permissions:
-  contents: read
+  contents: write
 jobs:
-  diagnose:
+  patch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect quiz and animation code
+      - name: Remove continuous background ambience only
         run: |
           python - <<'PY'
           from pathlib import Path
-          s=Path("index.html").read_text(encoding="utf-8")
-          terms=[
-            "function renderPlaceValue",
-            "function animate",
-            "regroup",
-            "counter",
-            "pvCounter",
-            "placeValue",
-            "algoModal",
-            "feedback",
-            "checkAnswer",
-            "ones",
-            "tens"
-          ]
-          for t in terms:
-              print("\n===== TERM",t,"=====")
-              start=0; n=0
-              while True:
-                  i=s.lower().find(t.lower(),start)
-                  if i<0 or n>=20: break
-                  print("\n--- occurrence",n+1,"at",i,"---")
-                  print(s[max(0,i-1400):min(len(s),i+3200)])
-                  start=i+len(t); n+=1
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+          old='const BG_AMBIENCE_VOLUME = 0.18;'
+          new='const BG_AMBIENCE_VOLUME = 0.0;'
+          if old not in s:
+              raise SystemExit("Expected background ambience volume line not found")
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding="utf-8")
           PY
+      - name: Commit patch
+        run: |
+          git config user.name "limkimsze-maker"
+          git config user.email "lim_kim_sze@moe.edu.sg"
+          git add index.html
+          git commit -m "Disable continuous background ambience" || exit 0
+          git push
