@@ -4350,6 +4350,26 @@ body.quizPageOpen #messageBox{
   }
 }
 
+
+/* Quiz scrolling across all chambers: preserve the wide teaching layout while
+   allowing trackpads, mouse wheels and touch swipes to reach tall content. */
+@media (min-width:981px) {
+  #modalShade.pageScrollMode #algoModal,
+  #modalShade.pageScrollMode .darkCard,
+  #modalShade.pageScrollMode .feedback,
+  #modalShade.pageScrollMode .hintPanel {
+    overflow-y:auto !important;
+    overscroll-behavior-y:auto !important;
+    -webkit-overflow-scrolling:touch;
+  }
+}
+@media (pointer:coarse), (max-width:980px) {
+  body.quizPageOpen #modalShade.pageScrollMode button,
+  body.quizPageOpen #modalShade.pageScrollMode .keyBtn,
+  body.quizPageOpen #modalShade.pageScrollMode .pillBtn {
+    touch-action:pan-y !important;
+  }
+}
 </style>
 </head>
 
