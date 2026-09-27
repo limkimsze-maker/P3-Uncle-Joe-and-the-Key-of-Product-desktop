@@ -1,75 +1,16 @@
-name: Patch Equal Groups Equation
-on:
+name: Diagnose Equal Groups
+'on':
   push:
     paths:
-      - '.github/workflows/diagnose-unclejoe.yml'
+      - .github/workflows/diagnose-unclejoe.yml
 permissions:
-  contents: write
+  contents: read
 jobs:
-  patch:
+  diagnose:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Patch equation layout
+      - name: Inspect equal groups markup
+        shell: bash
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          import re
-          p=Path("index.html")
-          s=p.read_text(encoding="utf-8")
-
-          # Find the Equal Groups activity section and add a narrowly-scoped layout override.
-          # The goal is visual only: keep '? groups of ? = ?' on one row without changing game logic.
-          marker="</style>"
-          css=r'''
-/* Equal Groups entrance puzzle: keep the equation on one straight line. */
-#equalGroupsModal .equationRow,
-#equalGroupsModal .equation-row,
-#equalGroupsModal .eqRow,
-#equalGroupsModal [class*="equation"] {
-  flex-wrap: nowrap !important;
-}
-#equalGroupsModal .equationRow,
-#equalGroupsModal .equation-row,
-#equalGroupsModal .eqRow {
-  display:flex !important;
-  align-items:center !important;
-  justify-content:flex-start !important;
-  gap:10px !important;
-  white-space:nowrap !important;
-}
-#equalGroupsModal .equationRow > *,
-#equalGroupsModal .equation-row > *,
-#equalGroupsModal .eqRow > * {
-  flex:0 0 auto !important;
-}
-'''
-          if css.strip() not in s:
-              s=s.replace(marker, css+"\n"+marker, 1)
-
-          # The current markup may use a generic container rather than one of the classes above.
-          # Add a class to the container that contains the literal "groups of" equation text.
-          idx=s.find("groups of")
-          if idx<0:
-              raise SystemExit("Could not find Equal Groups equation text.")
-          # Locate nearest opening div before this text and add eqRow class when safe.
-          start=s.rfind("<div", 0, idx)
-          end=s.find(">", start, idx)
-          if start>=0 and end>=0:
-              tag=s[start:end+1]
-              if "eqRow" not in tag:
-                  if 'class="' in tag:
-                      tag2=tag.replace('class="','class="eqRow ',1)
-                  else:
-                      tag2=tag[:-1]+' class="eqRow">'
-                  s=s[:start]+tag2+s[end+1:]
-
-          p.write_text(s,encoding="utf-8")
-          PY
-      - name: Commit patch
-        run: |
-          git config user.name "limkimsze-maker"
-          git config user.email "lim_kim_sze@moe.edu.sg"
-          git add index.html
-          git commit -m "Keep Equal Groups equation on one line" || exit 0
-          git push
+          python -c "from pathlib import Path; s=Path('index.html').read_text(encoding='utf-8'); i=s.find('groups of'); print('INDEX',i); print(s[max(0,i-3500):i+3500])"
