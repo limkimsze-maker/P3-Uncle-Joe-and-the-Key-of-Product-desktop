@@ -13,40 +13,7 @@ jobs:
       - name: Fit equation on one row
         shell: bash
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          p=Path("index.html")
-          s=p.read_text(encoding="utf-8")
-          css = """
-/* Equal Groups: force all five equation parts into one fitted row. */
-#equalGroupOverlay .egEquation{
-  display:grid !important;
-  grid-template-columns:58px max-content 58px max-content 58px !important;
-  align-items:center !important;
-  justify-content:center !important;
-  column-gap:6px !important;
-  row-gap:0 !important;
-  white-space:nowrap !important;
-  padding:10px 8px !important;
-  font-size:clamp(20px,2.25vw,30px) !important;
-  line-height:1 !important;
-  overflow:visible !important;
-}
-#equalGroupOverlay .egEquation .egBlank{
-  box-sizing:border-box !important;
-  min-width:58px !important;
-  width:58px !important;
-  max-width:58px !important;
-  min-height:52px !important;
-  padding:3px 5px !important;
-  margin:0 !important;
-}
-"""
-          key="/* Equal Groups: force all five equation parts into one fitted row. */"
-          if key not in s:
-              s=s.replace("</style>",css+"\n</style>",1)
-          p.write_text(s,encoding="utf-8")
-          PY
+          python -c "from pathlib import Path; p=Path('index.html'); s=p.read_text(encoding='utf-8'); css='\n/* Equal Groups fitted one-row equation */\n#equalGroupOverlay .egEquation{display:grid !important;grid-template-columns:58px max-content 58px max-content 58px !important;align-items:center !important;justify-content:center !important;column-gap:6px !important;row-gap:0 !important;white-space:nowrap !important;padding:10px 8px !important;font-size:clamp(20px,2.25vw,30px) !important;line-height:1 !important;}\n#equalGroupOverlay .egEquation .egBlank{box-sizing:border-box !important;min-width:58px !important;width:58px !important;max-width:58px !important;min-height:52px !important;padding:3px 5px !important;margin:0 !important;}\n'; s=s if '/* Equal Groups fitted one-row equation */' in s else s.replace('</style>',css+'</style>',1); p.write_text(s,encoding='utf-8')"
       - name: Commit patch
         shell: bash
         run: |
