@@ -1,8 +1,5 @@
 name: Patch Resume And Restart
-'on':
-  push:
-    paths:
-      - .github/workflows/diagnose-unclejoe.yml
+on: [push]
 permissions:
   contents: write
 jobs:
@@ -10,56 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Patch resume and restart
+      - name: Patch game
         shell: bash
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          import re
-          p=Path("index.html")
-          s=p.read_text(encoding="utf-8")
-
-          # Rename visible reset controls to Restart Game.
-          s=s.replace('>Hold 2s to Reset<','>Restart Game<')
-          s=s.replace('>Hold 2s to Reset</button>','>Restart Game</button>')
-          s=s.replace('<b>Reset Progress</b>','<b>Restart Game</b>')
-
-          # Desktop build: Start / Continue currently forces the opening scene.
-          old='''      // Opening lesson must never be skipped by saved testing progress.
-      // Start outside, show the button, and require the equal-groups puzzle first.
-      setupOpeningStart(true);
-      showMessage("Opening Scene: solve the equal-groups puzzle at the pyramid button before entering.");'''
-          new='''      // Continue from the saved stage when progress exists.
-      // applySavedProgress() already restores completed jewels/chambers and a safe saved camera position.
-      if(progressLoaded){
-        showMessage("Progress restored. Continue from where you left off.");
-      }else{
-        setupOpeningStart(true);
-        showMessage("Opening Scene: solve the equal-groups puzzle at the pyramid button before entering.");
-      }'''
-          if old in s:
-              s=s.replace(old,new,1)
-
-          # Generic fallback for builds whose start handler directly forces setupOpeningStart(true).
-          # Only alter the call when it sits inside the coverStartBtn handler.
-          marker='document.getElementById("coverStartBtn").addEventListener("click",()=>{'
-          mi=s.find(marker)
-          if mi>=0:
-              end=s.find('});',mi)
-              if end>mi:
-                  block=s[mi:end+3]
-                  if 'setupOpeningStart(true);' in block and 'if(progressLoaded)' not in block:
-                      block=block.replace('setupOpeningStart(true);','if(!progressLoaded) setupOpeningStart(true);',1)
-                      s=s[:mi]+block+s[end+3:]
-
-          p.write_text(s,encoding="utf-8")
-          PY
-      - name: Verify patch
-        shell: bash
-        run: |
-          grep -n "Restart Game" index.html | head -n 10 || true
-          grep -n "Progress restored. Continue from where you left off." index.html | head -n 5 || true
-      - name: Commit patch
+          python -c 'from pathlib import Path; p=Path("index.html"); s=p.read_text(encoding="utf-8"); s=s.replace(">Hold 2s to Reset<",">Restart Game<").replace("<b>Reset Progress</b>","<b>Restart Game</b>"); old='"'"'      // Opening lesson must never be skipped by saved testing progress.\n      // Start outside, show the button, and require the equal-groups puzzle first.\n      setupOpeningStart(true);\n      showMessage("Opening Scene: solve the equal-groups puzzle at the pyramid button before entering.");'"'"'; new='"'"'      if(progressLoaded){\n        showMessage("Progress restored. Continue from where you left off.");\n      }else{\n        setupOpeningStart(true);\n        showMessage("Opening Scene: solve the equal-groups puzzle at the pyramid button before entering.");\n      }'"'"'; s=s.replace(old,new,1); p.write_text(s,encoding="utf-8")'
+      - name: Commit
         shell: bash
         run: |
           git config user.name "limkimsze-maker"
