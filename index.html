@@ -7903,6 +7903,7 @@ const wrap = document.getElementById("gameWrap");
     }
 
     function addScarab(idx,x,z){
+      if(idx >= SCARAB_TOTAL) return null;
       const group = new THREE.Group();
       group.position.set(x,.82,z);
 
