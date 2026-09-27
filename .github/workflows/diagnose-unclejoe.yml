@@ -1,30 +1,69 @@
-name: Diagnose Start Handler
+name: Patch Resume And Restart
 'on':
   push:
     paths:
       - .github/workflows/diagnose-unclejoe.yml
 permissions:
-  contents: read
+  contents: write
 jobs:
-  diagnose:
+  patch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect start handler
+      - name: Patch resume and restart
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-          s=Path("index.html").read_text(encoding="utf-8")
-          low=s.lower()
-          terms=['getelementbyid("coverstartbtn")',"coverstartbtn.onclick","coverstartbtn).addeventlistener","coverstartbtn').addeventlistener","applysavedprogress()","progressloaded ?","if(progressloaded)","outdoor_start","first_chamber_entry"]
-          for term in terms:
-              print("\n====",term,"====")
-              start=0; n=0
-              while True:
-                  i=low.find(term.lower(),start)
-                  if i<0 or n>=20: break
-                  print("\n---",i,"---")
-                  print(s[max(0,i-2800):min(len(s),i+6500)])
-                  start=i+len(term); n+=1
+          import re
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+
+          # Rename visible reset controls to Restart Game.
+          s=s.replace('>Hold 2s to Reset<','>Restart Game<')
+          s=s.replace('>Hold 2s to Reset</button>','>Restart Game</button>')
+          s=s.replace('<b>Reset Progress</b>','<b>Restart Game</b>')
+
+          # Desktop build: Start / Continue currently forces the opening scene.
+          old='''      // Opening lesson must never be skipped by saved testing progress.
+      // Start outside, show the button, and require the equal-groups puzzle first.
+      setupOpeningStart(true);
+      showMessage("Opening Scene: solve the equal-groups puzzle at the pyramid button before entering.");'''
+          new='''      // Continue from the saved stage when progress exists.
+      // applySavedProgress() already restores completed jewels/chambers and a safe saved camera position.
+      if(progressLoaded){
+        showMessage("Progress restored. Continue from where you left off.");
+      }else{
+        setupOpeningStart(true);
+        showMessage("Opening Scene: solve the equal-groups puzzle at the pyramid button before entering.");
+      }'''
+          if old in s:
+              s=s.replace(old,new,1)
+
+          # Generic fallback for builds whose start handler directly forces setupOpeningStart(true).
+          # Only alter the call when it sits inside the coverStartBtn handler.
+          marker='document.getElementById("coverStartBtn").addEventListener("click",()=>{'
+          mi=s.find(marker)
+          if mi>=0:
+              end=s.find('});',mi)
+              if end>mi:
+                  block=s[mi:end+3]
+                  if 'setupOpeningStart(true);' in block and 'if(progressLoaded)' not in block:
+                      block=block.replace('setupOpeningStart(true);','if(!progressLoaded) setupOpeningStart(true);',1)
+                      s=s[:mi]+block+s[end+3:]
+
+          p.write_text(s,encoding="utf-8")
           PY
+      - name: Verify patch
+        shell: bash
+        run: |
+          grep -n "Restart Game" index.html | head -n 10 || true
+          grep -n "Progress restored. Continue from where you left off." index.html | head -n 5 || true
+      - name: Commit patch
+        shell: bash
+        run: |
+          git config user.name "limkimsze-maker"
+          git config user.email "lim_kim_sze@moe.edu.sg"
+          git add index.html
+          git commit -m "Resume saved stage and add Restart Game" || exit 0
+          git push
