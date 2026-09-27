@@ -4861,7 +4861,7 @@ const wrap = document.getElementById("gameWrap");
     let introThoughtVoice = null;
     let introThoughtKeepAliveTimer = null;
     const INTRO_THOUGHT_TEXT = "I heard that six villagers were trapped in the pyramid by an evil sorcerer. I wonder if that is a myth.";
-    const OUTDOOR_START = {x:0, y:1.65, z:28.4, ry:0};
+    const OUTDOOR_START = {x:0, y:1.65, z:(LOW_POWER && window.innerWidth < 700 ? 22.5 : 28.4), ry:0};
     const FIRST_CHAMBER_ENTRY = {x:0, y:1.65, z:6.5, ry:0};
 
     const SHIBA_COMPANION_MODEL_URL = "./ShibaInu_true_lowpoly_static.glb";
@@ -10389,6 +10389,22 @@ function addTablet(){
     function buildWorld(){
       addAmbient();
       addOutdoorPyramidScene();
+      // Some mobile GPUs struggle with many lit outdoor materials in the desktop
+      // build. Keep the complete outdoor geometry, using unlit colours on phones.
+      if(LOW_POWER && window.innerWidth < 700){
+        scene.traverse((obj)=>{
+          if(!obj.isMesh || !obj.material) return;
+          const plain = (mat)=>{
+            if(!mat || !mat.isMeshStandardMaterial) return mat;
+            return new THREE.MeshBasicMaterial({
+              color:mat.color.clone(), map:mat.map,
+              transparent:mat.transparent, opacity:mat.opacity,
+              side:mat.side, depthTest:mat.depthTest, depthWrite:mat.depthWrite
+            });
+          };
+          obj.material = Array.isArray(obj.material) ? obj.material.map(plain) : plain(obj.material);
+        });
+      }
       // Bright chambers; Torch Corridor remains deliberately dark.
       addBrightChamberLight(0,0,1.65,17);
       addBrightChamberLight(0,-28.5,1.75,17);
