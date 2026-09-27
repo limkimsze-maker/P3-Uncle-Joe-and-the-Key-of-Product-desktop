@@ -4450,10 +4450,10 @@ body.quizPageOpen #messageBox{
           <li><b>For Teacher</b> is for teacher troubleshooting and chamber testing.</li>
         </ol>
         <div class="resetWarningBox compactReset">
-          <b>Reset Progress</b><br>
+          <b>Restart Game</b><br>
           Use this only to restart from Chamber 1.
           <div class="resetButtonWrap">
-            <button class="coverBtn secondary" id="coverResetBtnTop" type="button">Hold 2s to Reset</button>
+            <button class="coverBtn secondary" id="coverResetBtnTop" type="button">Restart Game</button>
           </div>
         </div>
       </div>
@@ -11955,10 +11955,12 @@ function openPuzzle(){
       ensureCrowdCheerSound();
       ensureEndingCheerSound();
       startBackgroundAmbience();
-      // Opening lesson must never be skipped by saved testing progress.
-      // Start outside, show the button, and require the equal-groups puzzle first.
-      setupOpeningStart(true);
-      showMessage("Opening Scene: solve the equal-groups puzzle at the pyramid button before entering.");
+      if(progressLoaded){
+        showMessage("Progress restored. Continue from where you left off.");
+      }else{
+        setupOpeningStart(true);
+        showMessage("Opening Scene: solve the equal-groups puzzle at the pyramid button before entering.");
+      }
     });
     document.getElementById("playAgainBtn").addEventListener("click",()=>fullResetProgress());
 
