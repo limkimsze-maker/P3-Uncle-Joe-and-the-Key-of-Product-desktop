@@ -10389,14 +10389,20 @@ function addTablet(){
     function buildWorld(){
       addAmbient();
       addOutdoorPyramidScene();
-      // Keep Chrome's original lighting. Use simpler outdoor materials only when
-      // Brave identifies itself on a phone; Brave and Chrome share a user agent.
-      if(LOW_POWER && window.innerWidth < 700 && navigator.brave && typeof navigator.brave.isBrave === "function"){
+      // Brave and Chrome share a user agent. Apply the outdoor graphics fallback
+      // only after Brave identifies itself, on both desktop and phone screens.
+      if(navigator.brave && typeof navigator.brave.isBrave === "function"){
         const outdoorMeshes = [];
         scene.traverse((obj)=>{ if(obj.isMesh && obj.material) outdoorMeshes.push(obj); });
         Promise.resolve(navigator.brave.isBrave()).then((isBrave)=>{
           if(!isBrave) return;
           OUTDOOR_START.z = 22.5;
+          // Identification is asynchronous; move the opening camera only if
+          // the player is still at the original start, never during gameplay.
+          if(!progressLoaded && Math.abs(camera.position.z - 28.4) < .05 &&
+             Math.abs(camera.position.x) < .05){
+            camera.position.z = OUTDOOR_START.z;
+          }
           const plain = (mat)=>{
             if(!mat || !mat.isMeshStandardMaterial) return mat;
             return new THREE.MeshBasicMaterial({
