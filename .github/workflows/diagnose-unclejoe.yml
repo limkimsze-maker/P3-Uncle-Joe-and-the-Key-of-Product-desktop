@@ -13,32 +13,7 @@ jobs:
       - name: Keep equal-groups equation on one row
         shell: bash
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          p=Path("index.html")
-          s=p.read_text(encoding="utf-8")
-          css = """
-/* Equal Groups: keep the full equation on one straight line. */
-#equalGroupOverlay .egEquation{
-  display:flex !important;
-  flex-direction:row !important;
-  flex-wrap:nowrap !important;
-  align-items:center !important;
-  justify-content:flex-start !important;
-  gap:10px !important;
-  white-space:nowrap !important;
-}
-#equalGroupOverlay .egEquation > *{
-  flex:0 0 auto !important;
-}
-"""
-          marker="</style>"
-          if css.strip() not in s:
-              if marker not in s:
-                  raise SystemExit("style marker not found")
-              s=s.replace(marker, css+"\n"+marker, 1)
-          p.write_text(s,encoding="utf-8")
-          PY
+          python -c "from pathlib import Path; p=Path('index.html'); s=p.read_text(encoding='utf-8'); css='\n/* Equal Groups one-line equation */\n#equalGroupOverlay .egEquation{display:flex !important;flex-direction:row !important;flex-wrap:nowrap !important;align-items:center !important;justify-content:flex-start !important;gap:10px !important;white-space:nowrap !important;}\n#equalGroupOverlay .egEquation>*{flex:0 0 auto !important;}\n'; s=s if '/* Equal Groups one-line equation */' in s else s.replace('</style>',css+'</style>',1); p.write_text(s,encoding='utf-8')"
       - name: Commit patch
         shell: bash
         run: |
