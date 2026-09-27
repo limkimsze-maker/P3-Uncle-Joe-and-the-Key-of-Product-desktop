@@ -10861,7 +10861,7 @@ function addTablet(){
           const idx = Number(String(item.id).replace("sunSealBtn",""));
           if(idx >= SUN_SEAL_TOTAL || !window.sixthDoorOpen || !sunSealVisible || sunSealChallengeDone.has(idx) || idx !== sunSealChallengeDone.size) continue;
         }
-        if(item.id==="tablet" && doorOpen) continue;
+        if(["tablet","tabletSign","tabletGem"].includes(item.id) && doorOpen) continue;
         const dist = Math.hypot(camera.position.x-item.position.x,camera.position.z-item.position.z);
         if(!currentTarget && dist < item.radius && dist < nearest){
           nearest = dist; currentTarget = item;
@@ -10909,7 +10909,7 @@ function addTablet(){
         openEqualGroupsPuzzle();
         return;
       }
-      if(currentTarget.id === "tablet"){
+      if(["tablet","tabletSign","tabletGem"].includes(currentTarget.id)){
         activeQuizMode = "starting";
         openPuzzle();
       }
