@@ -1,4 +1,4 @@
-name: Patch Uncle Joe Background Sound
+name: Patch Equal Groups Equation
 on:
   push:
     paths:
@@ -10,17 +10,60 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Remove continuous background ambience only
+      - name: Patch equation layout
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
           p=Path("index.html")
           s=p.read_text(encoding="utf-8")
-          old='const BG_AMBIENCE_VOLUME = 0.18;'
-          new='const BG_AMBIENCE_VOLUME = 0.0;'
-          if old not in s:
-              raise SystemExit("Expected background ambience volume line not found")
-          s=s.replace(old,new,1)
+
+          # Find the Equal Groups activity section and add a narrowly-scoped layout override.
+          # The goal is visual only: keep '? groups of ? = ?' on one row without changing game logic.
+          marker="</style>"
+          css=r'''
+/* Equal Groups entrance puzzle: keep the equation on one straight line. */
+#equalGroupsModal .equationRow,
+#equalGroupsModal .equation-row,
+#equalGroupsModal .eqRow,
+#equalGroupsModal [class*="equation"] {
+  flex-wrap: nowrap !important;
+}
+#equalGroupsModal .equationRow,
+#equalGroupsModal .equation-row,
+#equalGroupsModal .eqRow {
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:10px !important;
+  white-space:nowrap !important;
+}
+#equalGroupsModal .equationRow > *,
+#equalGroupsModal .equation-row > *,
+#equalGroupsModal .eqRow > * {
+  flex:0 0 auto !important;
+}
+'''
+          if css.strip() not in s:
+              s=s.replace(marker, css+"\n"+marker, 1)
+
+          # The current markup may use a generic container rather than one of the classes above.
+          # Add a class to the container that contains the literal "groups of" equation text.
+          idx=s.find("groups of")
+          if idx<0:
+              raise SystemExit("Could not find Equal Groups equation text.")
+          # Locate nearest opening div before this text and add eqRow class when safe.
+          start=s.rfind("<div", 0, idx)
+          end=s.find(">", start, idx)
+          if start>=0 and end>=0:
+              tag=s[start:end+1]
+              if "eqRow" not in tag:
+                  if 'class="' in tag:
+                      tag2=tag.replace('class="','class="eqRow ',1)
+                  else:
+                      tag2=tag[:-1]+' class="eqRow">'
+                  s=s[:start]+tag2+s[end+1:]
+
           p.write_text(s,encoding="utf-8")
           PY
       - name: Commit patch
@@ -28,5 +71,5 @@ jobs:
           git config user.name "limkimsze-maker"
           git config user.email "lim_kim_sze@moe.edu.sg"
           git add index.html
-          git commit -m "Disable continuous background ambience" || exit 0
+          git commit -m "Keep Equal Groups equation on one line" || exit 0
           git push
