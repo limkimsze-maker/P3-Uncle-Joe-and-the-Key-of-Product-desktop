@@ -1,4 +1,4 @@
-name: Remove Sixth Scarab
+name: Patch Scarab Wording
 'on':
   push:
     paths:
@@ -10,18 +10,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Remove scarabs beyond configured total
+      - name: Update visible scarab wording
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
           p=Path("index.html")
           s=p.read_text(encoding="utf-8")
-          old='    function addScarab(idx,x,z){\n      const group = new THREE.Group();'
-          new='    function addScarab(idx,x,z){\n      if(idx >= SCARAB_TOTAL) return null;\n      const group = new THREE.Group();'
-          if old not in s:
-              raise SystemExit("addScarab function signature block not found")
-          s=s.replace(old,new,1)
+          replacements = {
+            "All 6 scarabs":"All 5 scarabs",
+            "6 scarabs":"5 scarabs",
+            "six scarabs":"five scarabs",
+            "Six scarabs":"Five scarabs"
+          }
+          changed=False
+          for a,b in replacements.items():
+              if a in s:
+                  s=s.replace(a,b)
+                  changed=True
+          if not changed:
+              print("No literal 6-scarab wording found; leaving file unchanged.")
           p.write_text(s,encoding="utf-8")
           PY
       - name: Commit patch
@@ -30,5 +38,5 @@ jobs:
           git config user.name "limkimsze-maker"
           git config user.email "lim_kim_sze@moe.edu.sg"
           git add index.html
-          git commit -m "Remove sixth scarab from five-question chamber" || exit 0
+          git commit -m "Update scarab wording to five" || exit 0
           git push
