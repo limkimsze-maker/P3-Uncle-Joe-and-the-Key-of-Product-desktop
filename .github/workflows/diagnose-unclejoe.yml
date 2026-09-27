@@ -1,28 +1,34 @@
-name: Diagnose Scarab Creation
+name: Remove Sixth Scarab
 'on':
   push:
     paths:
       - .github/workflows/diagnose-unclejoe.yml
 permissions:
-  contents: read
+  contents: write
 jobs:
-  diagnose:
+  patch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect scarab creation code
+      - name: Remove scarabs beyond configured total
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-          s=Path("index.html").read_text(encoding="utf-8")
-          for term in ["function addScarab","addScarab(","scarabs.push","scarabPositions","SCARAB_TOTAL","for(let i=0;i<6","for (let i=0;i<6"]:
-              print("\n====",term,"====")
-              start=0; n=0
-              while True:
-                  i=s.find(term,start)
-                  if i<0 or n>=12: break
-                  print("\n---",i,"---")
-                  print(s[max(0,i-1800):min(len(s),i+3500)])
-                  start=i+len(term); n+=1
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+          old='    function addScarab(idx,x,z){\n      const group = new THREE.Group();'
+          new='    function addScarab(idx,x,z){\n      if(idx >= SCARAB_TOTAL) return null;\n      const group = new THREE.Group();'
+          if old not in s:
+              raise SystemExit("addScarab function signature block not found")
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding="utf-8")
           PY
+      - name: Commit patch
+        shell: bash
+        run: |
+          git config user.name "limkimsze-maker"
+          git config user.email "lim_kim_sze@moe.edu.sg"
+          git add index.html
+          git commit -m "Remove sixth scarab from five-question chamber" || exit 0
+          git push
