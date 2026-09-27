@@ -1,0 +1,29 @@
+name: Diagnose Uncle Joe HTML
+on:
+  push:
+    paths:
+      - '.github/workflows/diagnose-unclejoe.yml'
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect relevant code
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path("index.html").read_text(encoding="utf-8")
+          print("SIZE", len(s), "LINES", s.count("\n")+1)
+          terms=["sunSeal","sixthDoorOpen","activeQuizMode","openPuzzle","counter","regroup","quizPageOpen","tabletGem","SUN_SEAL_TOTAL"]
+          for t in terms:
+              print("\n===== TERM",t,"=====")
+              start=0; n=0
+              while True:
+                  i=s.find(t,start)
+                  if i<0 or n>=12: break
+                  print("\n--- occurrence",n+1,"at",i,"---")
+                  print(s[max(0,i-900):min(len(s),i+1800)])
+                  start=i+len(t); n+=1
+          PY
