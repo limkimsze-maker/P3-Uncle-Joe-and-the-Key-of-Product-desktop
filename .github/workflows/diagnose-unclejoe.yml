@@ -1,4 +1,4 @@
-name: Verify Progression Items
+name: Diagnose Resume Logic
 'on':
   push:
     paths:
@@ -6,26 +6,25 @@ name: Verify Progression Items
 permissions:
   contents: read
 jobs:
-  verify:
+  diagnose:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect progression names from programme
+      - name: Inspect resume save reset logic
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
           s=Path("index.html").read_text(encoding="utf-8")
-          terms=["ruby","topaz","emerald","sapphire","wand","restorationKey","key of product","jewel","gem"]
           low=s.lower()
+          terms=["function saveprogress","function loadprogress","saveprogress(","loadprogress(","localstorage","coverstartbtn","coverresetbtntop","camera.position","rubycollected","topazcollected","emeraldcollected","sapphirecollected","wandcollected","villagerfreedcount","sunsealcount","restorationkeycollected"]
           for term in terms:
               print("\n====",term,"====")
               start=0; n=0
               while True:
-                  i=low.find(term.lower(),start)
-                  if i<0 or n>=20: break
+                  i=low.find(term,start)
+                  if i<0 or n>=12: break
                   print("\n---",i,"---")
-                  print(s[max(0,i-450):min(len(s),i+950)])
-                  start=i+len(term)
-                  n+=1
+                  print(s[max(0,i-1600):min(len(s),i+3200)])
+                  start=i+len(term); n+=1
           PY
