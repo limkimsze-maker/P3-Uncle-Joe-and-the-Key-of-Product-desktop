@@ -1,24 +1,28 @@
-name: Patch Equal Groups Equation Fit
+name: Diagnose Scarab Creation
 'on':
   push:
     paths:
       - .github/workflows/diagnose-unclejoe.yml
 permissions:
-  contents: write
+  contents: read
 jobs:
-  patch:
+  diagnose:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Fit equation on one row
+      - name: Inspect scarab creation code
         shell: bash
         run: |
-          python -c "from pathlib import Path; p=Path('index.html'); s=p.read_text(encoding='utf-8'); css='\n/* Equal Groups fitted one-row equation */\n#equalGroupOverlay .egEquation{display:grid !important;grid-template-columns:58px max-content 58px max-content 58px !important;align-items:center !important;justify-content:center !important;column-gap:6px !important;row-gap:0 !important;white-space:nowrap !important;padding:10px 8px !important;font-size:clamp(20px,2.25vw,30px) !important;line-height:1 !important;}\n#equalGroupOverlay .egEquation .egBlank{box-sizing:border-box !important;min-width:58px !important;width:58px !important;max-width:58px !important;min-height:52px !important;padding:3px 5px !important;margin:0 !important;}\n'; s=s if '/* Equal Groups fitted one-row equation */' in s else s.replace('</style>',css+'</style>',1); p.write_text(s,encoding='utf-8')"
-      - name: Commit patch
-        shell: bash
-        run: |
-          git config user.name "limkimsze-maker"
-          git config user.email "lim_kim_sze@moe.edu.sg"
-          git add index.html
-          git commit -m "Fit Equal Groups equation on one row" || exit 0
-          git push
+          python - <<'PY'
+          from pathlib import Path
+          s=Path("index.html").read_text(encoding="utf-8")
+          for term in ["function addScarab","addScarab(","scarabs.push","scarabPositions","SCARAB_TOTAL","for(let i=0;i<6","for (let i=0;i<6"]:
+              print("\n====",term,"====")
+              start=0; n=0
+              while True:
+                  i=s.find(term,start)
+                  if i<0 or n>=12: break
+                  print("\n---",i,"---")
+                  print(s[max(0,i-1800):min(len(s),i+3500)])
+                  start=i+len(term); n+=1
+          PY
