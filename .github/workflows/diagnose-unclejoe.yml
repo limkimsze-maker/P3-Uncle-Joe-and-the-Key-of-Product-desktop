@@ -10,20 +10,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect relevant code
+      - name: Inspect quiz and animation code
         run: |
           python - <<'PY'
           from pathlib import Path
           s=Path("index.html").read_text(encoding="utf-8")
-          print("SIZE", len(s), "LINES", s.count("\n")+1)
-          terms=["sunSeal","sixthDoorOpen","activeQuizMode","openPuzzle","counter","regroup","quizPageOpen","tabletGem","SUN_SEAL_TOTAL"]
+          terms=[
+            "function renderPlaceValue",
+            "function animate",
+            "regroup",
+            "counter",
+            "pvCounter",
+            "placeValue",
+            "algoModal",
+            "feedback",
+            "checkAnswer",
+            "ones",
+            "tens"
+          ]
           for t in terms:
               print("\n===== TERM",t,"=====")
               start=0; n=0
               while True:
-                  i=s.find(t,start)
-                  if i<0 or n>=12: break
+                  i=s.lower().find(t.lower(),start)
+                  if i<0 or n>=20: break
                   print("\n--- occurrence",n+1,"at",i,"---")
-                  print(s[max(0,i-900):min(len(s),i+1800)])
+                  print(s[max(0,i-1400):min(len(s),i+3200)])
                   start=i+len(t); n+=1
           PY
